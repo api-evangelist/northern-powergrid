@@ -1,0 +1,52 @@
+generated: '2026-07-27'
+method: searched
+source: live probes of the Northern Powergrid open data portal host and the corporate website host
+note: >-
+  The open data portal is an Opendatasoft (Huwise) hosted tenant, so the only /.well-known/ document
+  served is the platform operator's RFC 9116 security.txt — it names Opendatasoft's security contact,
+  not a Northern Powergrid one. The corporate site www.northernpowergrid.com returns 403 to every
+  request originating outside the UK (a geo-block interstitial titled "Non-UK website users"), so no
+  /.well-known/ document there could be probed from this location; that is recorded as a blocked
+  probe, not as an absence.
+hosts:
+- host: https://northernpowergrid.opendatasoft.com
+  role: open data portal + Explore API base host
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    file: northern-powergrid-security.txt
+    standard: RFC 9116
+    published_by: Opendatasoft (platform operator)
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /llms.txt
+    status: 404
+- host: https://www.northernpowergrid.com
+  role: corporate website
+  probe_blocked: true
+  probe_block_reason: geo-blocked outside the United Kingdom (HTTP 403 interstitial)
+  documents:
+  - path: /.well-known/security.txt
+    status: 403
+  - path: /.well-known/openid-configuration
+    status: 403
+  - path: /.well-known/oauth-authorization-server
+    status: 403
+  - path: /.well-known/api-catalog
+    status: 403
+  - path: /.well-known/ai-plugin.json
+    status: 403
+  - path: /llms.txt
+    status: 403
+related:
+- kind: catalog
+  note: >-
+    The portal does publish a machine-readable catalogue, just not at /.well-known/api-catalog — it is
+    a DCAT-AP export served by the Explore API itself.
+  url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat

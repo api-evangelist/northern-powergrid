@@ -1,0 +1,80 @@
+generated: '2026-07-27'
+method: derived
+status: candidate
+source: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+note: >-
+  Northern Powergrid publishes no MCP server, and neither does the Opendatasoft platform. Searched
+  the portal, the platform documentation, the npm registry and the MCP registries on 2026-07-27; the
+  only MCP surface that speaks this protocol is a community package (@pipeworx/mcp-opendatasoft, a
+  generic client for any public Opendatasoft instance), which is not published by either party and is
+  recorded under third_party rather than as this provider's server. The tools below are a CANDIDATE
+  set derived one-to-one from the real operationIds in the published OpenAPI — every tool inherits
+  its input schema from that operation's parameters. Nothing here is deployed.
+server:
+  name: northern-powergrid
+  transport: http
+  url: null
+  published: false
+  probes:
+  - {url: 'https://northernpowergrid.opendatasoft.com/mcp', result: not found}
+  - {registry: 'mcp registries / npm @modelcontextprotocol', result: none first-party}
+auth:
+  required: false
+  note: >-
+    Anonymous read works for most datasets at 5,000 requests/day. A free API key raises the quota and
+    unlocks records-gated datasets; pass it as "Authorization: Apikey <key>".
+  detail: authentication/northern-powergrid-authentication.yml
+tools:
+- name: search_datasets
+  description: Search and filter the 102-dataset open data catalogue with ODSQL.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getDatasets
+- name: get_dataset
+  description: Read one dataset's metadata, field definitions and availability flags.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getDataset
+- name: list_catalog_facets
+  description: Enumerate catalogue facet values to narrow a dataset search.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getDatasetsFacets
+- name: query_records
+  description: Query a dataset's records with select/where/group_by/order_by, paged by limit and offset.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getRecords
+- name: get_record
+  description: Read a single record of a dataset by its record id.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getRecord
+- name: list_record_facets
+  description: Enumerate a dataset's facet values for refinement.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getRecordsFacets
+- name: list_dataset_attachments
+  description: List the files attached to a dataset.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#getDatasetAttachments
+- name: export_dataset
+  description: Export a whole dataset in a chosen format, bypassing the record paging caps.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#exportRecords
+- name: list_dataset_export_formats
+  description: List the export formats available for a dataset.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#listDatasetExportFormats
+- name: export_catalog_dcat
+  description: Export the whole catalogue as DCAT-AP RDF/XML for federation into another data portal.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#exportCatalogDCAT
+- name: list_catalog_export_formats
+  description: List the export formats available for the catalogue.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#listExportFormats
+- name: export_catalog
+  description: Export the catalogue in a chosen format.
+  source_operation: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json#exportDatasets
+agent_notes:
+  safety: >-
+    Every operation is a GET. There is no write path, so no tool in this set can mutate anything and
+    all of them are safe to retry. The only budget to respect is the daily request quota.
+  first_step: >-
+    Always resolve a dataset_id through search_datasets and read its field list through get_dataset
+    before composing a where or select clause — the per-dataset schema is runtime data, not contract.
+  bulk: Prefer export_dataset over paging query_records; exports carry no result cap.
+  detail: agentic-access/northern-powergrid-agentic-access.yml
+third_party:
+- name: "@pipeworx/mcp-opendatasoft"
+  url: https://www.npmjs.com/package/@pipeworx/mcp-opendatasoft
+  official: false
+  description: >-
+    Community MCP server for the generic Opendatasoft portal protocol across ~3,000 public
+    instances. Can be pointed at northernpowergrid.opendatasoft.com but is not endorsed or published
+    by Northern Powergrid or Opendatasoft.

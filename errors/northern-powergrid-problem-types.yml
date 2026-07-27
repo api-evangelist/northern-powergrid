@@ -1,0 +1,101 @@
+generated: '2026-07-27'
+method: derived
+source: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+enriched_from:
+- https://help.huwise.com/apis/ods-explore-v2/
+- live error responses from https://northernpowergrid.opendatasoft.com/api/explore/v2.1 on 2026-07-27
+format: custom-json
+rfc9457: false
+envelope:
+  media_type: application/json; charset=utf-8
+  fields:
+    error_code: >-
+      Machine-readable PascalCase identifier. This is the field to branch on; the platform does not
+      publish an exhaustive registry of values, so treat unknown codes as retryable-or-not by status.
+    message: >-
+      Human-readable explanation. For query errors it names the offending clause and the character
+      position, which makes ODSQL mistakes unusually cheap to debug.
+  note: >-
+    Not RFC 9457 problem+json — no type URI, no title, no instance, and the response is served as
+    application/json rather than application/problem+json. Errors carry no per-field validation
+    array either.
+coverage:
+  operations_in_spec: 16
+  operations_declaring_4xx: 16
+  statuses_declared_per_operation: [200, 400, 401, 429, 500]
+  spec_gap: >-
+    The OpenAPI declares the 400/401/429/500 status codes on every operation but attaches no schema,
+    description or example to 400 and 429, so the error contract is only fully legible from the
+    reference docs and live responses. 404 is returned in practice (verified) but is declared on no
+    operation.
+problems:
+- status: 400
+  error_code: ODSQLSyntaxError
+  title: Malformed ODSQL query
+  detail: The query string could not be parsed. The message names the failing clause and character offset.
+  observed_example: "ODSQL syntax exception: unexpected ( at position 9 in BADSYNTAX((. Clause(s) containing the error(s): where."
+  remediation: Fix the ODSQL expression in the named clause; do not retry unchanged.
+  retryable: false
+  source: live probe 2026-07-27
+- status: 400
+  error_code: ODSQLError
+  title: Invalid ODSQL query
+  detail: The query parsed but is not valid — for example an unknown function or an illegal field reference.
+  observed_example: "ODSQL query is malformed: invalid_function() Clause(s) containing the error(s): select."
+  remediation: Check function and field names against the ODSQL reference and the dataset's field list.
+  retryable: false
+  source: https://help.huwise.com/apis/ods-explore-v2/
+- status: 400
+  title: Bad request
+  detail: Declared on all 16 operations with no schema, description or example in the spec.
+  source_operations: [getDatasets, listExportFormats, exportDatasets, exportCatalogCSV, exportCatalogDCAT, getDatasetsFacets, getRecords, listDatasetExportFormats, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX, getDataset, getRecordsFacets, getDatasetAttachments, getRecord]
+  retryable: false
+- status: 401
+  title: Unauthorized
+  detail: >-
+    Returned when a restricted resource is requested without a valid credential. On this portal that
+    is the common case for the datasets that are metadata-visible but records-gated to anonymous
+    callers, and for any private-catalog request.
+  remediation: >-
+    Register a free portal account, generate an API key, and pass it as "Authorization: Apikey <key>"
+    — or complete the OAuth 2.0 authorization-code flow.
+  retryable: false
+  source_operations: [getDatasets, getRecords, getDataset, getRecord, getDatasetAttachments]
+- status: 404
+  error_code: NotFoundResource
+  title: Resource not found
+  detail: The named dataset or record does not exist on this portal.
+  observed_example: "The requested dataset nonexistent-dataset-xyz does not exist."
+  remediation: Resolve the dataset_id through getDatasets before addressing records.
+  retryable: false
+  declared_in_spec: false
+  source: live probe 2026-07-27
+- status: 404
+  error_code: NotFoundURI
+  title: Unknown endpoint
+  detail: >-
+    The requested path is not part of the API surface. The message helpfully points at
+    /api/v2/swagger.json as the endpoint reference.
+  remediation: Check the path against the OpenAPI in openapi/.
+  retryable: false
+  declared_in_spec: false
+  source: live probe of /api/v1/swagger.json 2026-07-27
+- status: 429
+  title: Too many requests
+  detail: >-
+    The daily request quota is exhausted (5,000/day anonymous). No schema or description is attached
+    in the spec; the surviving signal is the X-RateLimit-* header set.
+  remediation: >-
+    Back off until X-RateLimit-Reset (a daily boundary, not seconds), or authenticate with a free
+    account for the extended allowance. For bulk needs use the exports endpoints instead of paging.
+  retryable: true
+  retry_after_source: X-RateLimit-Reset
+  source_operations: [getDatasets, getRecords, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+- status: 500
+  title: Internal Server Error
+  detail: Declared on all 16 operations.
+  remediation: Retry with backoff; the API is read-only so retries are unconditionally safe.
+  retryable: true
+related:
+  conventions: conventions/northern-powergrid-conventions.yml
+  rate_limits: rate-limits/northern-powergrid-rate-limits.yml

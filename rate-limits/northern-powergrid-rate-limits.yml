@@ -1,0 +1,65 @@
+generated: '2026-07-27'
+method: searched
+source: live response headers observed on https://northernpowergrid.opendatasoft.com/api/explore/v2.1 on 2026-07-27
+docs: https://northernpowergrid.opendatasoft.com/pages/tutorial_page/
+note: >-
+  Values below were read off real responses from this portal, not from a published tariff table.
+  Northern Powergrid does not publish a numeric quota for registered accounts — the portal only says
+  a free account gives "an increased API count" and the platform docs say an authenticated user gets
+  "extended quotas". That unquantified upgrade is recorded as such rather than guessed at.
+rate_limits:
+- name: anonymous daily request quota
+  audience: anonymous
+  limit_count: 5000
+  interval: day
+  reset: daily at 00:00 UTC
+  scope: per caller
+  observed:
+    x-ratelimit-limit: '5000'
+    x-ratelimit-remaining: '4975'
+    x-ratelimit-reset: '2026-07-28 00:00:00+00:00'
+  source: live probe of GET /catalog/datasets?limit=1
+- name: registered account daily request quota
+  audience: authenticated
+  limit_count: null
+  interval: day
+  scope: per account
+  note: >-
+    Documented qualitatively only ("increased API count" / "extended quotas"); no published number,
+    so none is recorded.
+  source: https://northernpowergrid.opendatasoft.com/pages/tutorial_page/
+- name: per-dataset request quota
+  audience: all
+  limit_count: null
+  interval: day
+  scope: per dataset
+  note: >-
+    The API exposes a second, dataset-scoped counter alongside the global one. The headers are
+    advertised in access-control-expose-headers on every response; concrete values surface on
+    dataset record calls.
+  source: live probe (access-control-expose-headers)
+headers:
+- name: X-RateLimit-Limit
+  meaning: total requests allowed in the current window
+- name: X-RateLimit-Remaining
+  meaning: requests left in the current window
+- name: X-RateLimit-Reset
+  meaning: ISO timestamp at which the window resets
+- name: X-RateLimit-dataset-Limit
+  meaning: dataset-scoped total
+- name: X-RateLimit-dataset-Remaining
+  meaning: dataset-scoped remainder
+- name: X-RateLimit-dataset-Reset
+  meaning: dataset-scoped reset timestamp
+cors_exposed: true
+over_limit:
+  status: 429
+  documented_in_spec: true
+  note: Every one of the 16 operations declares a 429 response in the OpenAPI.
+result_limits:
+- surface: records endpoints
+  note: >-
+    Separate from request quotas, the query surface caps result size — limit maxes at 100 without a
+    group_by (and offset+limit must stay under 10000), or 20000 with a group_by. The exports
+    endpoints carry no such cap and are the documented escape hatch for bulk retrieval.
+  source: https://help.huwise.com/apis/ods-explore-v2/#tag/Dataset/operation/getRecords

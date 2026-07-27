@@ -1,0 +1,86 @@
+generated: '2026-07-27'
+method: searched
+source: https://help.huwise.com/apis/ods-explore-v2/#section/Versioning
+derived_from:
+- openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+- openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
+- live probes 2026-07-27
+summary: >-
+  This API has a real, written versioning and deprecation policy — inherited from the Opendatasoft
+  platform rather than authored by Northern Powergrid, but binding on this endpoint and verifiable
+  from its response headers. What it does not have is a status page: no status.opendatasoft.com and
+  no portal status page answered, so uptime transparency is the gap.
+versioning:
+  scheme: uri-path
+  current: v2.1
+  current_status: stable, production ready — no future breaking change promised
+  previous: v2.0
+  previous_status: still served at /api/explore/v2.0 and still publishing its own OpenAPI
+  docs: https://help.huwise.com/apis/ods-explore-v2/#section/Versioning
+  guarantees:
+  - ODSQL is backward compatible — new syntax never replaces existing syntax
+  - response bodies are stable — keys may be added, never renamed or removed
+  - URLs and endpoints are stable
+  breaking_change_rule: >-
+    Any violation of the three guarantees above is only ever shipped as a new API version at a new
+    stable URL, with its own exhaustive documentation and a widely communicated release note.
+deprecation:
+  policy_url: https://help.huwise.com/apis/ods-explore-v2/#section/Versioning
+  sunset_header: false
+  rfc8594: false
+  deprecation_header: ODS-Explore-API-Deprecation
+  deprecation_header_format: "<FEATURE_ID>: deprecation message (multiple messages separated by ';')"
+  deprecation_header_example: "DATE_KEYS_AS_ISOFORMAT: Dates used in group keys are currently returned as timestamps and will be returned as standard formatted date strings in the next API version"
+  link_header: >-
+    The Link header on a response carries the URL of the version changelog, so a client that notices
+    a deprecation message can follow the header straight to the migration notes.
+  cors_exposed: true
+  detail: >-
+    Feature-level deprecation is signalled in-band on live responses, and responses from a superseded
+    major version carry the header too. This is a stronger machine-readable signal than most open
+    data APIs manage, though it is a vendor-specific header rather than RFC 8594 Deprecation/Sunset.
+deprecated_operations: []
+deprecated_features:
+- feature: grouping by geo fields
+  replacement: geo_cluster() grouping function
+  since: v2.1
+  source: https://help.huwise.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+- feature: XLS export format
+  replacement: XLSX
+  since: v2.1
+- feature: "distance() / geometry() geometry predicates"
+  replacement: "within_distance(), intersects(), disjoint(), within() — old names still available"
+  since: v2.1
+removed_endpoints:
+- endpoint: /api/explore/v2.0/datasets/{id}/aggregates
+  removed_in: v2.1
+  replacement: merged into the records endpoint
+- endpoint: /api/explore/v2.0/datasets/{id}/query
+  removed_in: v2.1
+  replacement: merged into the records endpoint
+status_page:
+  url: null
+  probed:
+  - {url: 'https://status.opendatasoft.com/', status: 404}
+  - {url: 'https://northernpowergrid.opendatasoft.com/pages/status/', status: 404}
+  finding: >-
+    No status or incident page could be found for either the portal or the platform. There is no
+    published uptime target and no SLA — expected for a free open data service under a licence
+    condition, but it is the operational gap on this provider.
+sla:
+  url: null
+  uptime_target: null
+support:
+  contact_form: https://northernpowergrid.opendatasoft.com/pages/contactform/
+  platform_contact: support@huwise.com
+  community: https://help.opendatasoft.com/en/home
+data_lifecycle:
+  driver: >-
+    The open data programme exists because Ofgem's Data Best Practice Guidance is a licence condition
+    under the RIIO-ED2 price control, so dataset publication and refresh are regulated obligations
+    rather than discretionary product decisions.
+  licence: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+  licence_name: Northern Powergrid Open Data Licence v1.0
+related:
+  changelog: changelog/northern-powergrid-changelog.yml
+  conventions: conventions/northern-powergrid-conventions.yml

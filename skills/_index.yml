@@ -1,0 +1,39 @@
+generated: '2026-07-27'
+method: generated
+source: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+note: >-
+  Northern Powergrid publishes no agent skills, AGENTS.md or equivalent — searched the portal, the
+  corporate site (geo-blocked from outside the UK) and the platform documentation on 2026-07-27.
+  These are generated, and every operationId referenced was verified verbatim against the published
+  OpenAPI. Three skills cover the whole 16-operation surface: orientation, the marquee live dataset,
+  and bulk/federation.
+skills:
+- file: northern-powergrid-discover-and-query-datasets.md
+  name: Discover and query the Northern Powergrid open data catalogue
+  api: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+  operations: [getDatasets, getDatasetsFacets, getDataset, getRecords, getRecord, getRecordsFacets, getDatasetAttachments]
+  auth: optional
+  summary: >-
+    The orientation skill. Facet the catalogue by theme, resolve a dataset_id, read its runtime field
+    list, then compose ODSQL. Explains the has_records / data_visible gate that silently returns zero
+    rows to anonymous callers.
+- file: northern-powergrid-track-live-power-cuts.md
+  name: Track live power cuts on the Northern Powergrid network
+  api: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+  operations: [getDataset, getRecords, getRecordsFacets, exportRecords]
+  dataset: live-power-cuts-data
+  auth: none
+  summary: >-
+    The marquee real-time use case — open incidents, affected areas, estimated restoration times, with
+    no credential. Includes polling economics against the 5,000/day budget.
+- file: northern-powergrid-bulk-export-and-federate.md
+  name: Bulk export Northern Powergrid datasets and federate the catalogue
+  api: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+  operations: [listExportFormats, exportDatasets, exportCatalogCSV, exportCatalogDCAT, listDatasetExportFormats, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+  auth: optional
+  summary: >-
+    Uncapped whole-dataset pulls in CSV, Parquet, GeoJSON and GPX, plus DCAT-AP catalogue harvesting
+    for federation into another data portal.
+coverage:
+  operations_in_spec: 16
+  operations_covered: 16

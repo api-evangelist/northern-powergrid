@@ -1,0 +1,56 @@
+generated: '2026-07-27'
+method: searched
+source: https://northernpowergrid.opendatasoft.com/, npm registry
+note: >-
+  Northern Powergrid ships no UI component library of its own. The embeddable surfaces on this
+  provider are the platform's: the portal's own hosted explore/map/chart/dashboard pages, which can
+  be embedded, and the Opendatasoft dataviz packages that render this portal's data in a third-party
+  page. Recorded with official: false (not Northern Powergrid artifacts) and platform_official: true.
+hosted_surfaces:
+- name: Explore
+  url: https://northernpowergrid.opendatasoft.com/explore/
+  kind: hosted dataset browser
+  embeddable: true
+- name: Map
+  url: https://northernpowergrid.opendatasoft.com/map/
+  kind: hosted geospatial viewer
+  embeddable: true
+  detail: >-
+    Renders the geo_point_2d / geo_shape fields the network datasets carry — the visual counterpart
+    to the same data the Explore API returns as GeoJSON.
+- name: Charts
+  url: https://northernpowergrid.opendatasoft.com/chart/
+  kind: hosted chart builder
+  embeddable: true
+- name: Dashboards
+  url: https://northernpowergrid.opendatasoft.com/pages/portal_dashboards/
+  kind: hosted dashboard pages
+  embeddable: true
+- name: API console
+  url: https://northernpowergrid.opendatasoft.com/api-console/explore/v2.1/
+  kind: embedded interactive request builder
+libraries:
+- family: dataviz
+  name: "@opendatasoft/visualizations"
+  registry: npm
+  url: https://www.npmjs.com/package/@opendatasoft/visualizations
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  license: MIT
+  official: false
+  platform_official: true
+  vendor: Opendatasoft
+  description: Svelte/TypeScript components for building dashboards and visualizations over portal data.
+- family: dataviz
+  name: "@opendatasoft/visualizations-react"
+  registry: npm
+  url: https://www.npmjs.com/package/@opendatasoft/visualizations-react
+  license: MIT
+  official: false
+  platform_official: true
+  vendor: Opendatasoft
+  description: React wrapper for the visualization components.
+loaders:
+- name: "@opendatasoft/api-client"
+  role: data loader for the components above — speaks Explore API v2.1 and builds ODSQL queries
+  registry: npm
+  detail: packages/northern-powergrid-packages.yml

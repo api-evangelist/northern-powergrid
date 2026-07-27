@@ -1,0 +1,62 @@
+generated: '2026-07-27'
+method: searched
+source: https://help.huwise.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+note: >-
+  Northern Powergrid publishes no changelog of its own for this API. The API's changelog is the
+  platform's, and it is version-scoped rather than dated: the reference documentation carries a
+  "v2.1 Changelog" section enumerating exactly what changed from v2.0, and the API advertises the
+  changelog URL in the Link header of live responses. Entries below are transcribed from that
+  section verbatim in substance; no dates are published for individual items, so none were invented.
+scheme: major.minor in the URI path
+current_version: v2.1
+current_status: stable — the platform declares no future breaking change for this version
+changelog_discovery:
+  documented_url: https://help.huwise.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+  in_band: >-
+    The Link response header carries the URL of the version changelog, and
+    ODS-Explore-API-Deprecation carries feature-level deprecation messages, so a client can discover
+    the changelog without out-of-band knowledge.
+entries:
+- version: v2.1
+  date: null
+  status: current
+  breaking: true
+  summary: >-
+    Query, export and response-shape changes relative to v2.0. Some are explicitly not backward
+    compatible, which is why they were shipped as a new version at a new path rather than in place.
+  breaking_changes:
+  - The XLSX export format replaces the old XLS format.
+  - Full-text search reworked — the search() function changed; suggest() and startswith() added.
+  - Date functions year(), month(), day(), hour(), minute(), second() now return integers instead of strings.
+  - Date aggregation keys are formatted as ISO-format dates, previously as timestamps.
+  - In a group_by, null values are now grouped.
+  - CSV exports emit a byte order mark (BOM) by default.
+  - GPX exports changed the default attribute export delimiter.
+  - Datetimes in GeoJSON exports are output as ISO-format strings, previously as integer timestamps.
+  - Output schemas changed for getDatasets, getDataset, getRecords and getRecord.
+  - /datasets/{id}/aggregates and /datasets/{id}/query were removed; their functionality merged into the records endpoint.
+  additions:
+  - The group_by clause is now available on export endpoints.
+  - New ODSQL predicates suggest() and startswith().
+  - Geometry functions renamed to within_distance(), intersects(), disjoint() and within(); the old names still work.
+  deprecations:
+  - Grouping by geo fields is deprecated in favour of the geo_cluster() grouping function.
+- version: v2.0
+  date: null
+  status: superseded but still served
+  breaking: false
+  summary: >-
+    The previous major version, still live at /api/explore/v2.0 with its own published OpenAPI 3.0.3
+    (byte-identical to the document served at the legacy /api/v2/swagger.json alias). Responses from
+    this version carry the ODS-Explore-API-Deprecation header.
+  artifact: openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
+cadence:
+  documented: >-
+    "New features are added every month and bugs are fixed every week" — the platform's stated
+    development cadence, though individual changes are not published as dated entries.
+  source: https://help.huwise.com/apis/ods-explore-v2/#section/Versioning
+gaps:
+- No dated release feed, RSS or JSON changelog for this API.
+- No Northern Powergrid-authored changelog for the dataset catalogue itself (dataset additions and schema changes are not announced through a feed).
+related:
+  lifecycle: lifecycle/northern-powergrid-lifecycle.yml

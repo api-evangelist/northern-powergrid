@@ -1,0 +1,123 @@
+generated: '2026-07-27'
+method: derived
+source: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+enriched_from:
+- https://help.huwise.com/apis/ods-explore-v2/
+- https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+- live probes 2026-07-27
+note: >-
+  This is an assertion of which cross-cutting and sector standards the API demonstrably conforms to,
+  each with the evidence that supports it. Nothing here is a certification claim — Northern Powergrid
+  publishes no trust centre and no audited compliance programme for this API, and none was inferred.
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: Both live versions publish OpenAPI 3.0.3 documents at /api/explore/v2.x/swagger.json.
+- id: rest
+  conforms: true
+  evidence: Resource-oriented, hierarchical GET-only paths returning JSON.
+- id: oauth2
+  conforms: true
+  evidence: >-
+    Authorization-code flow documented as RFC 6749 compliant with RFC 6750 bearer tokens;
+    /oauth2/authorize/ (302) and /oauth2/token/ (405 to GET, POST-only) both answer on this host.
+- id: oauth2-rfc8414-discovery
+  conforms: false
+  evidence: /.well-known/oauth-authorization-server returns 404 — the OAuth endpoints are documented, not discoverable.
+- id: oidc
+  conforms: false
+  evidence: /.well-known/openid-configuration returns 404; no OIDC surface documented.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: >-
+    Errors use a custom {error_code, message} envelope served as application/json, not
+    application/problem+json.
+- id: rfc9116-security-txt
+  conforms: true
+  evidence: >-
+    /.well-known/security.txt returns 200 with Contact and Expires fields — published by the platform
+    operator (security@opendatasoft.com), not by Northern Powergrid.
+- id: rfc8594-deprecation-header
+  conforms: false
+  evidence: >-
+    Deprecation is signalled, but through the vendor header ODS-Explore-API-Deprecation rather than
+    the standard Deprecation/Sunset headers.
+- id: rfc6570-uri-templates
+  conforms: false
+  evidence: Not used; paths are conventional OpenAPI path templates.
+- id: json-api
+  conforms: false
+  evidence: Responses are plain JSON with a links array, not JSON:API documents.
+- id: hateoas
+  conforms: partial
+  evidence: >-
+    Every response carries a links array of relations for navigating the endpoint hierarchy, and the
+    Link header is used for changelog discovery — hypermedia navigation without a formal media type.
+- id: dcat-ap
+  conforms: true
+  evidence: >-
+    exportCatalogDCAT serves the whole catalogue as RDF/XML DCAT-AP at
+    /api/explore/v2.1/catalog/exports/dcat, with a dcat_ap_format path segment for profile variants.
+    This is the interoperability standard that matters most for a public-sector open data catalogue.
+- id: geojson
+  conforms: true
+  evidence: GeoJSON is a documented export format; geo_point_2d/geo_shape field types appear in live dataset schemas.
+- id: gpx
+  conforms: true
+  evidence: exportRecordsGPX serves dataset records as GPX.
+- id: apache-parquet
+  conforms: true
+  evidence: exportRecordsParquet serves dataset records as Parquet — a real analytics-grade bulk path.
+- id: csv-rfc4180
+  conforms: partial
+  evidence: >-
+    CSV export with a configurable delimiter (default ";"), emitting a BOM by default since v2.1 —
+    close to but not strictly RFC 4180.
+- id: cors
+  conforms: true
+  evidence: "access-control-allow-origin: * with rate-limit and deprecation headers explicitly exposed."
+- id: hsts
+  conforms: true
+  evidence: "strict-transport-security: max-age=31536000; includeSubdomains on the API host."
+- id: pagination-offset
+  conforms: true
+  evidence: limit/offset with documented caps and total_count in the response body.
+- id: idempotency-keys
+  conforms: false
+  evidence: >-
+    Not applicable — the API is GET-only, so every operation is idempotent by HTTP semantics and no
+    idempotency-key contract exists or is needed.
+- id: webhooks
+  conforms: false
+  evidence: No event, webhook or streaming surface is published.
+- id: asyncapi
+  conforms: false
+  evidence: No event surface, therefore no AsyncAPI document.
+sector_standards:
+- id: ofgem-data-best-practice
+  conforms: true
+  evidence: >-
+    The open data programme is delivered under Ofgem's Data Best Practice Guidance, a licence
+    condition of the RIIO-ED2 price control. Unlike much of the sector this is visibly implemented —
+    102 datasets, an open licence, a documented API and an anonymous quota — rather than only claimed.
+  regime: GB electricity distribution (Ofgem / RIIO-ED2)
+- id: uk-open-government-licence
+  conforms: false
+  evidence: >-
+    Data is published under the Northern Powergrid Open Data Licence v1.0, a bespoke licence, not
+    under OGL v3.0.
+  licence_url: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+- id: cim-iec-61968
+  conforms: false
+  evidence: >-
+    Datasets are published as flat tabular/geospatial resources, not as IEC Common Information Model
+    payloads. No CIM, no ENA Open Networks data model.
+- id: consumer-data-right
+  conforms: false
+  applicable: false
+  evidence: >-
+    Great Britain has no energy consumer data right equivalent to the Australian CDR, and a
+    distribution network operator would not be the obligated party if it did — Northern Powergrid
+    holds no retail accounts. Recorded as not applicable rather than as a failure.
+certifications_published: []
+compliance_programme_published: false

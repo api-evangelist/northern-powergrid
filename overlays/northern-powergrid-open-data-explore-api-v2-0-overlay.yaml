@@ -1,0 +1,58 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Northern Powergrid Open Data Explore API v2.0
+  version: 1.0.0
+extends: openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
+x-apievangelist:
+  generated: '2026-07-27'
+  method: generated
+  source: >-
+    Enhancements derived from the provider's reference documentation and live probes on 2026-07-27.
+    This overlay never mutates the harvested spec.
+  rationale: >-
+    v2.0 is the superseded major version. It is still served and still publishes its own OpenAPI, so
+    it is catalogued separately — but consumers should be told, in the machine-readable document,
+    that a stable successor exists at /api/explore/v2.1, what changed, and that responses from this
+    version carry a deprecation header.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: northern-powergrid
+    x-apievangelist-artifacts: https://github.com/api-evangelist/northern-powergrid
+    x-apievangelist-verified: '2026-07-27'
+    x-lifecycle-stage: superseded
+    x-successor-version: v2.1
+    x-successor-base-url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1
+    x-deprecation-header: ODS-Explore-API-Deprecation
+    x-changelog: https://help.huwise.com/apis/ods-explore-v2/#section/Introduction/v2.1-Changelog
+    x-migration-notes: >-
+      Moving to v2.1 is not a no-op. /datasets/{id}/aggregates and /datasets/{id}/query were removed
+      and folded into the records endpoint; output schemas changed for getDatasets, getDataset,
+      getRecords and getRecord; date functions now return integers rather than strings; date
+      aggregation keys are ISO-format rather than timestamps; XLSX replaced XLS; CSV exports emit a
+      BOM by default; and grouping by geo fields is deprecated in favour of geo_cluster().
+    x-alias-url: https://northernpowergrid.opendatasoft.com/api/v2/swagger.json
+    x-alias-note: The document served at the legacy /api/v2/swagger.json alias is byte-identical to this one.
+- target: $.servers[0]
+  update:
+    description: Northern Powergrid open data portal, Explore API v2.0 (superseded; still served)
+- target: $.components.securitySchemes
+  update:
+    apikeyHeader:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: 'Provider-recommended API key transport, documented but absent from the spec. Format: "Authorization: Apikey <API_KEY>".'
+- target: $.components.schemas
+  update:
+    error:
+      type: object
+      description: The {error_code, message} envelope this API returns. Not RFC 9457 problem+json.
+      properties:
+        error_code:
+          type: string
+          example: NotFoundResource
+        message:
+          type: string
+          example: "The requested dataset nonexistent-dataset-xyz does not exist."
+      required: [error_code, message]

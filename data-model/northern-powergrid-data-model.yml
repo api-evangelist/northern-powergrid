@@ -1,0 +1,92 @@
+generated: '2026-07-27'
+method: derived
+source: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+enriched_from:
+- live responses from https://northernpowergrid.opendatasoft.com/api/explore/v2.1 on 2026-07-27
+summary: >-
+  The contract-level data model is tiny and generic on purpose: a catalogue of datasets, each with
+  fields and records, each record addressable by id, plus facets and attachments. The interesting
+  model is one level down — the shape of each of the 102 published datasets is data, not schema, and
+  is discovered at runtime through the fields array on a dataset. Any agent working this API must
+  resolve dataset_id and then the field list before it can write a meaningful where or select clause.
+entities:
+- name: catalog
+  description: The portal's collection of datasets. Singleton, addressed at /catalog.
+  identifier: null
+  operations: [getDatasets, getDatasetsFacets, listExportFormats, exportDatasets, exportCatalogCSV, exportCatalogDCAT]
+- name: dataset
+  description: >-
+    A published dataset — its identifiers, metadata, field definitions and availability flags.
+    has_records and data_visible are the two flags that matter operationally: on this portal roughly
+    44 of the 102 datasets are metadata-visible but records-gated to anonymous callers.
+  identifier: dataset_id
+  alternate_identifier: dataset_uid
+  key_fields: [dataset_id, dataset_uid, has_records, data_visible, features, metas, fields, attachments]
+  operations: [getDataset, getRecords, getRecordsFacets, getDatasetAttachments, listDatasetExportFormats, exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+- name: record
+  description: >-
+    A single row of a dataset. Only the platform envelope fields are typed in the contract
+    (_id, _timestamp, _size, _links); the payload columns are dataset-specific and are described by
+    the parent dataset's fields array, not by the OpenAPI.
+  identifier: _id
+  key_fields: [_id, _timestamp, _size]
+  operations: [getRecord, getRecords]
+- name: field
+  description: >-
+    A column definition on a dataset — name, label, type, annotations. Field types observed live on
+    this portal include text, geo_point_2d and geo_shape, which is what makes the network datasets
+    map-renderable.
+  identifier: name
+  parent: dataset
+  discovered_via: dataset.fields
+- name: facet
+  description: A facetable dimension and its value enumeration, used to narrow a query with refine/exclude.
+  identifier: name
+  operations: [getDatasetsFacets, getRecordsFacets]
+- name: facet_value
+  description: One value of a facet with its match count and selection state.
+  key_fields: [name, value, count, state]
+  parent: facet
+- name: attachment
+  description: A file attached to a dataset, addressed by href with its own metadata block.
+  identifier: href
+  parent: dataset
+  operations: [getDatasetAttachments]
+- name: link
+  description: A hypermedia relation (href + rel) attached to every response envelope.
+  key_fields: [href, rel]
+relationships:
+- {from: catalog, to: dataset, type: has_many, via: results}
+- from: dataset
+  to: record
+  type: has_many
+  via: dataset_id
+  note: "records are addressed under /catalog/datasets/{dataset_id}/records"
+- {from: dataset, to: field, type: has_many, via: fields}
+- {from: dataset, to: attachment, type: has_many, via: attachments}
+- {from: dataset, to: facet, type: has_many, via: getRecordsFacets}
+- {from: catalog, to: facet, type: has_many, via: getDatasetsFacets}
+- {from: facet, to: facet_value, type: has_many, via: facets}
+- {from: record, to: dataset, type: belongs_to, via: dataset_id}
+- {from: dataset, to: link, type: has_many, via: _links}
+- {from: record, to: link, type: has_many, via: _links}
+envelopes:
+- name: datasets
+  wraps: dataset
+  fields: [total_count, results, _links]
+- name: records
+  wraps: record
+  fields: [total_count, results, _links]
+- name: facet_enumeration
+  wraps: facet_value_enumeration
+  fields: [name, facets]
+runtime_shape:
+  note: >-
+    The domain model of the data itself — power cut incidents, embedded capacity register entries,
+    network capacity headroom, aggregated smart-meter consumption, LV feeder geometry — lives in the
+    per-dataset field definitions and the Northern Powergrid Open Data Licence, not in the API
+    contract. Two calls resolve it for any dataset:
+    GET /catalog/datasets/{dataset_id} then read fields[].
+  catalogue_size_observed: 102
+  observed_on: '2026-07-27'
+render: null

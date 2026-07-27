@@ -1,0 +1,109 @@
+generated: '2026-07-27'
+method: derived
+source: mcp/northern-powergrid-mcp.yml, openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+note: >-
+  There is no published MCP server and no GraphQL surface for this provider, so this crosswalk binds
+  the CANDIDATE tool set in mcp/northern-powergrid-mcp.yml back to the real operationIds it was
+  derived from. Because each tool was minted from exactly one verified operation, every binding is
+  high confidence and there are no mcp_only rows — the divergence this artifact usually records
+  simply does not exist here. Its value is the inverse: it states that the agent-facing surface is a
+  complete, faithful projection of the REST contract, and names the input schema each tool inherits.
+surfaces:
+  openapi:
+    file: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+    url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json
+    gated: false
+    operations: 16
+  graphql:
+    endpoint: null
+    gated: null
+    note: No GraphQL surface; /graphql returns 404 on the portal host.
+  mcp:
+    url: null
+    gated: null
+    status: candidate
+    note: No hosted MCP server exists; tools/list could not be called because there is nothing to call.
+crosswalk:
+- tool: search_datasets
+  category: catalog
+  rest: [getDatasets]
+  binding: rest
+  confidence: high
+  input_schema_source: "GET /catalog/datasets parameters (select, where, group_by, order_by, refine, exclude, limit, offset, lang, timezone)"
+- tool: get_dataset
+  category: catalog
+  rest: [getDataset]
+  binding: rest
+  confidence: high
+  input_schema_source: "GET /catalog/datasets/{dataset_id} parameters"
+- tool: list_catalog_facets
+  category: catalog
+  rest: [getDatasetsFacets]
+  binding: rest
+  confidence: high
+  input_schema_source: "GET /catalog/facets parameters"
+- tool: list_catalog_export_formats
+  category: catalog-export
+  rest: [listExportFormats]
+  binding: rest
+  confidence: high
+- tool: export_catalog
+  category: catalog-export
+  rest: [exportDatasets, exportCatalogCSV]
+  binding: rest
+  confidence: high
+  note: >-
+    One tool fans out to the generic format endpoint plus the CSV shorthand; the format path
+    parameter selects between them.
+- tool: export_catalog_dcat
+  category: catalog-export
+  rest: [exportCatalogDCAT]
+  binding: rest
+  confidence: high
+  note: Kept as its own tool because DCAT-AP is the federation path, not just another download format.
+- tool: query_records
+  category: data
+  rest: [getRecords]
+  binding: rest
+  confidence: high
+  input_schema_source: "GET /catalog/datasets/{dataset_id}/records parameters"
+- tool: get_record
+  category: data
+  rest: [getRecord]
+  binding: rest
+  confidence: high
+- tool: list_record_facets
+  category: data
+  rest: [getRecordsFacets]
+  binding: rest
+  confidence: high
+- tool: list_dataset_attachments
+  category: data
+  rest: [getDatasetAttachments]
+  binding: rest
+  confidence: high
+- tool: list_dataset_export_formats
+  category: dataset-export
+  rest: [listDatasetExportFormats]
+  binding: rest
+  confidence: high
+- tool: export_dataset
+  category: dataset-export
+  rest: [exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX]
+  binding: rest
+  confidence: high
+  note: >-
+    One tool fans out to the generic format endpoint plus the three format shorthands (CSV, Parquet,
+    GPX); the format path parameter selects between them.
+mcp_only: []
+rest_only: []
+coverage:
+  tools_named: 12
+  tools_bound: 12
+  mcp_only: 0
+  rest_ops_total: 16
+  rest_ops_with_a_tool: 16
+  graphql_fields: 0
+  note: >-
+    Full coverage in both directions. The tool count is lower than the operation count only because
+    the four export shorthands collapse into their generic endpoints.

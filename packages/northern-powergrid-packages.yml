@@ -1,0 +1,72 @@
+generated: '2026-07-27'
+method: searched
+source: npm registry search, PyPI, Packagist, RubyGems, pkg.go.dev, crates.io, NuGet, Maven Central
+note: >-
+  Northern Powergrid itself publishes no client library. Its Open Data Explore API is the standard
+  Opendatasoft (Huwise) Explore API v2.1, and the platform operator maintains a first-party,
+  MIT-licensed TypeScript/JavaScript client for exactly that API — usable against this portal by
+  pointing it at northernpowergrid.opendatasoft.com. Those packages are recorded below with
+  official: false (they are not Northern Powergrid artifacts) and platform_official: true (they are
+  first-party to the platform that serves this API). Nothing was found on PyPI, Packagist, RubyGems,
+  pkg.go.dev, crates.io, NuGet or Maven Central.
+packages:
+- language: typescript
+  registry: npm
+  name: "@opendatasoft/api-client"
+  version_seen: 21.10.1
+  url: https://www.npmjs.com/package/@opendatasoft/api-client
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  license: MIT
+  install: npm install @opendatasoft/api-client
+  official: false
+  platform_official: true
+  vendor: Opendatasoft
+  targets: Opendatasoft Explore API v2.1
+  description: >-
+    Typescript/Javascript client library for the Opendatasoft Explore API v2.1, including an ODSQL
+    query builder. This is the library that speaks the exact protocol Northern Powergrid's open data
+    API serves.
+- language: javascript
+  registry: npm
+  name: "@opendatasoft/visualizations"
+  version_seen: 0.35.0
+  url: https://www.npmjs.com/package/@opendatasoft/visualizations
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  license: MIT
+  install: npm install @opendatasoft/visualizations
+  official: false
+  platform_official: true
+  vendor: Opendatasoft
+  description: Dashboard and visualization components for Opendatasoft portal data.
+- language: javascript
+  registry: npm
+  name: "@opendatasoft/visualizations-react"
+  version_seen: 0.35.0
+  url: https://www.npmjs.com/package/@opendatasoft/visualizations-react
+  repository: https://github.com/opendatasoft/ods-dataviz-sdk
+  license: MIT
+  install: npm install @opendatasoft/visualizations-react
+  official: false
+  platform_official: true
+  vendor: Opendatasoft
+  description: React wrapper for the Opendatasoft visualization components.
+third_party:
+- language: typescript
+  registry: npm
+  name: "@pipeworx/mcp-opendatasoft"
+  url: https://www.npmjs.com/package/@pipeworx/mcp-opendatasoft
+  official: false
+  platform_official: false
+  description: >-
+    Community MCP server that speaks the generic Opendatasoft portal protocol against any of the
+    ~3,000 public Opendatasoft instances. Not published by Northern Powergrid or Opendatasoft;
+    recorded for ecosystem completeness only.
+registries_checked:
+- {registry: npm, result: platform-vendor client found}
+- {registry: pypi, result: none}
+- {registry: packagist, result: none}
+- {registry: rubygems, result: none}
+- {registry: pkg.go.dev, result: none}
+- {registry: crates.io, result: none}
+- {registry: nuget, result: none}
+- {registry: maven-central, result: none}

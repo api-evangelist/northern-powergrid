@@ -1,0 +1,37 @@
+generated: '2026-07-27'
+method: searched
+source: https://help.huwise.com/apis/ods-explore-v2/#section/Authentication/Using-OAuth2-authorization
+docs: https://help.huwise.com/apis/ods-explore-v2/#section/Authentication/Using-OAuth2-authorization
+note: >-
+  The OpenAPI for this API declares no oauth2 security scheme — it only carries the apikey query
+  parameter — so the mechanical derivation returned nothing. The platform documentation does
+  document a full OAuth 2.0 authorization-code flow for this API, and it publishes exactly one
+  scope. That single scope is recorded here verbatim; no scope taxonomy was invented. Both endpoints
+  were confirmed live on this portal host on 2026-07-27 (/oauth2/authorize/ -> 302,
+  /oauth2/token/ -> 405 to a GET, i.e. POST-only).
+schemes:
+- name: oauth2
+  source: https://help.huwise.com/apis/ods-explore-v2/#section/Authentication/Using-OAuth2-authorization
+  standards: [RFC 6749, RFC 6750]
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://northernpowergrid.opendatasoft.com/oauth2/authorize/
+    tokenUrl: https://northernpowergrid.opendatasoft.com/oauth2/token/
+    refresh_supported: true
+    parameter_name: scopes
+    delimiter: space
+scopes:
+- scope: all
+  description: >-
+    Full access to the data the granting user can see on this domain. The platform documents this as
+    the only supported scope value; there is no finer-grained read/write split, and applications are
+    registered per domain so a grant never spans portals.
+  flows: [authorizationCode]
+  sources:
+  - https://help.huwise.com/apis/ods-explore-v2/#section/Authentication/Using-OAuth2-authorization
+coverage:
+  scopes_published: 1
+  granularity: coarse
+  note: >-
+    A one-scope model on a read-only, GET-only API. Least-privilege delegation is not expressible
+    here; an agent granted "all" inherits everything its granting user can read on this portal.

@@ -1,0 +1,131 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Northern Powergrid Open Data Explore API v2.1
+  version: 1.0.0
+extends: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+x-apievangelist:
+  generated: '2026-07-27'
+  method: generated
+  source: >-
+    Enhancements derived from the provider's own reference documentation and from live probes of
+    https://northernpowergrid.opendatasoft.com/api/explore/v2.1 on 2026-07-27. This overlay never
+    mutates the harvested spec; it records what we know that the published document leaves out.
+  rationale: >-
+    The published spec is structurally sound — 16 operations, all with operationIds, summaries and
+    tags — but it declares 400/401/429/500 on every operation with no schema, no description and no
+    example, omits the 404 the API actually returns, omits the OAuth 2.0 flow and the Authorization
+    header form of the API key that the docs document, and carries no servers-level context for this
+    tenant. Those are the gaps this overlay fills.
+actions:
+- target: $.info
+  update:
+    x-apievangelist-provider: northern-powergrid
+    x-apievangelist-artifacts: https://github.com/api-evangelist/northern-powergrid
+    x-apievangelist-verified: '2026-07-27'
+    x-provider-name: Northern Powergrid
+    x-provider-role: GB electricity distribution network operator (North East England, Yorkshire, northern Lincolnshire)
+    x-regulatory-driver: Ofgem Data Best Practice Guidance, a licence condition under the RIIO-ED2 price control
+    x-data-licence: Northern Powergrid Open Data Licence v1.0
+    x-data-licence-url: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+    x-catalog-size-observed: 102
+    x-platform: Opendatasoft (Huwise)
+- target: $.servers[0]
+  update:
+    description: Northern Powergrid open data portal, Explore API v2.1 (production; the only environment)
+- target: $.components.securitySchemes
+  update:
+    apikeyHeader:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: >-
+        The provider-recommended way to pass an API key, documented in the reference but absent from
+        the published spec. Format: "Authorization: Apikey <API_KEY>". Preferred over the apikey
+        query parameter because headers are not retained in browser history or server logs.
+    oauth2:
+      type: oauth2
+      description: >-
+        OAuth 2.0 authorization-code flow for third-party applications acting on behalf of a portal
+        user. RFC 6749 compliant with RFC 6750 bearer tokens; documented by the platform and
+        confirmed live on this host on 2026-07-27. Absent from the published spec.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://northernpowergrid.opendatasoft.com/oauth2/authorize/
+          tokenUrl: https://northernpowergrid.opendatasoft.com/oauth2/token/
+          refreshUrl: https://northernpowergrid.opendatasoft.com/oauth2/token/
+          scopes:
+            all: Full access to the data the granting user can see on this domain. The only scope the platform supports.
+- target: $.components.schemas
+  update:
+    error:
+      type: object
+      description: >-
+        The error envelope this API actually returns. Not RFC 9457 problem+json — no type URI, no
+        title, no instance — and served as application/json. Captured from live 400 and 404
+        responses on 2026-07-27.
+      properties:
+        error_code:
+          type: string
+          description: Machine-readable PascalCase error identifier, e.g. ODSQLSyntaxError, ODSQLError, NotFoundResource, NotFoundURI.
+          example: ODSQLSyntaxError
+        message:
+          type: string
+          description: Human-readable explanation; for query errors it names the failing clause and character offset.
+          example: "ODSQL syntax exception: unexpected ( at position 9 in BADSYNTAX((. Clause(s) containing the error(s): where."
+      required: [error_code, message]
+- target: $.paths['/catalog/datasets'].get.responses['400']
+  update:
+    description: >-
+      Bad request — usually a malformed or invalid ODSQL clause. Body is the {error_code, message}
+      envelope. Not retryable without changing the query.
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/error'
+        example:
+          error_code: ODSQLSyntaxError
+          message: "ODSQL syntax exception: unexpected ( at position 9 in BADSYNTAX((. Clause(s) containing the error(s): where."
+- target: $.paths['/catalog/datasets'].get.responses['429']
+  update:
+    description: >-
+      Daily request quota exhausted (5,000/day for anonymous callers). Back off until the
+      X-RateLimit-Reset timestamp — the window is daily, not per-second. Safe to retry.
+- target: $.paths['/catalog/datasets/{dataset_id}'].get.responses['400']
+  update:
+    description: Bad request. Body is the {error_code, message} envelope.
+    content:
+      application/json:
+        schema:
+          $ref: '#/components/schemas/error'
+- target: $.paths['/catalog/datasets/{dataset_id}'].get.responses
+  update:
+    '404':
+      description: >-
+        The named dataset does not exist on this portal. Returned in practice but declared on no
+        operation in the published spec. Verified live on 2026-07-27.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/error'
+          example:
+            error_code: NotFoundResource
+            message: "The requested dataset nonexistent-dataset-xyz does not exist."
+- target: $.paths['/catalog/datasets/{dataset_id}/records'].get
+  update:
+    x-result-limits:
+      limit_max_without_group_by: 100
+      limit_max_with_group_by: 20000
+      offset_plus_limit_max_without_group_by: 10000
+      offset_plus_limit_max_with_group_by: 20000
+      bulk_alternative: Use the exports endpoints, which carry no result cap.
+    x-agentic-access:
+      action-class: connected
+      consequence: read
+      token:
+        max-ttl: 3600
+      audit: none
+- target: $.paths['/catalog/datasets/{dataset_id}/records'].get.responses['429']
+  update:
+    description: >-
+      Daily request quota exhausted. Both a global and a dataset-scoped counter apply; read
+      X-RateLimit-Remaining and X-RateLimit-dataset-Remaining to tell which one tripped.

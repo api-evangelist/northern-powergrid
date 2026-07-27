@@ -32,7 +32,7 @@ accessModel:
   - portal
   generated: '2026-07-27'
   method: derived
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/groq.png
+image: https://s3-eu-central-1.amazonaws.com/aws-ec2-eu-central-1-opendatasoft-staticfileset/northernpowergrid/logo?tstamp=1668505636764573
 tags:
 - Energy
 - United Kingdom
@@ -75,6 +75,8 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+  - type: Overlay
+    url: overlays/northern-powergrid-open-data-explore-api-v2-1-overlay.yaml
   - type: APIReference
     url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
   - type: APIConsole
@@ -109,6 +111,8 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
+  - type: Overlay
+    url: overlays/northern-powergrid-open-data-explore-api-v2-0-overlay.yaml
   - type: APIReference
     url: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/console
   - type: Portal
@@ -135,6 +139,81 @@ apis:
   - type: Portal
     url: https://northernpowergrid.opendatasoft.com/
 common:
+- type: AgenticAccess
+  url: agentic-access/northern-powergrid-agentic-access.yml
+- type: DomainSecurity
+  url: security/northern-powergrid-domain-security.yml
+- type: Authentication
+  url: authentication/northern-powergrid-authentication.yml
+- type: OAuthScopes
+  url: scopes/northern-powergrid-scopes.yml
+- type: Conventions
+  url: conventions/northern-powergrid-conventions.yml
+- type: Idempotency
+  name: All operations idempotent (read-only, GET-only API)
+  url: conventions/northern-powergrid-conventions.yml
+- type: ErrorCatalog
+  url: errors/northern-powergrid-problem-types.yml
+- type: RateLimits
+  url: rate-limits/northern-powergrid-rate-limits.yml
+- type: Lifecycle
+  url: lifecycle/northern-powergrid-lifecycle.yml
+- type: Deprecation
+  name: Versioning and deprecation policy (ODS-Explore-API-Deprecation header)
+  url: https://help.huwise.com/apis/ods-explore-v2/#section/Versioning
+- type: ChangeLog
+  url: changelog/northern-powergrid-changelog.yml
+- type: Conformance
+  url: conformance/northern-powergrid-conformance.yml
+- type: DataModel
+  url: data-model/northern-powergrid-data-model.yml
+- type: Examples
+  url: examples/northern-powergrid-examples.yml
+- type: Sandbox
+  name: Interactive API console and public example portal
+  url: sandbox/northern-powergrid-sandbox.yml
+- type: Packages
+  url: packages/northern-powergrid-packages.yml
+- type: SDKs
+  name: "@opendatasoft/api-client — platform client for the Explore API v2.1"
+  url: packages/northern-powergrid-packages.yml
+- type: Components
+  url: components/northern-powergrid-components.yml
+- type: MCPServer
+  name: Candidate MCP tool set derived from the OpenAPI (no server published)
+  url: mcp/northern-powergrid-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/northern-powergrid-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: LLMsTxt
+  url: llms/northern-powergrid-llms.txt
+- type: WellKnown
+  url: well-known/northern-powergrid-well-known.yml
+- type: SecurityTxt
+  url: well-known/northern-powergrid-security.txt
+- type: VulnerabilityDisclosure
+  url: security/northern-powergrid-vulnerability-disclosure.yml
+- type: Security
+  name: security.txt (RFC 9116) on the open data portal host
+  url: https://northernpowergrid.opendatasoft.com/.well-known/security.txt
+- type: APIReference
+  url: https://help.huwise.com/apis/ods-explore-v2/
+- type: GettingStarted
+  url: https://help.huwise.com/apis/ods-explore-v2/#section/Getting-Started
+- type: Support
+  url: https://northernpowergrid.opendatasoft.com/pages/contactform/
+- type: SignUp
+  url: https://northernpowergrid.opendatasoft.com/signup/
+- type: Login
+  url: https://northernpowergrid.opendatasoft.com/account/login/
+- type: Roadmap
+  name: Open data portal Data Roadmap
+  url: https://northernpowergrid.opendatasoft.com/explore/dataset/data-roadmap/information/
+- type: TermsOfService
+  url: https://www.northernpowergrid.com/terms-and-conditions
+- type: PrivacyPolicy
+  url: https://www.northernpowergrid.com/privacy-policy
 - type: Website
   url: https://www.northernpowergrid.com/
 - type: Portal

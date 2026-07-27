@@ -1,0 +1,82 @@
+generated: '2026-07-27'
+method: searched
+source: openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json, openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+docs: https://help.huwise.com/apis/ods-explore-v2/#section/Authentication
+note: >-
+  The OpenAPI declares only the apikey query-parameter scheme. The platform's own reference
+  documentation for this API documents two further mechanisms the spec omits: the same API key
+  passed in an Authorization header (the vendor's recommended form), and a full OAuth 2.0
+  authorization-code flow with refresh tokens. Both were verified live against this portal on
+  2026-07-27 — GET /oauth2/authorize/ returned 302 and POST-only /oauth2/token/ returned 405 to a
+  GET. Anonymous access needs no credential at all: the catalogue and most datasets answer
+  unauthenticated at 5,000 requests a day.
+summary:
+  types:
+  - none
+  - apiKey
+  - oauth2
+  api_key_in:
+  - query
+  - header
+  oauth2_flows:
+  - authorizationCode
+  anonymous_access: true
+schemes:
+- name: anonymous
+  type: none
+  description: >-
+    No credential required. The catalogue, dataset metadata, facets and the records of the datasets
+    Northern Powergrid publishes openly all answer to unauthenticated callers, subject to the
+    anonymous daily quota. Roughly 44 of the 102 datasets are metadata-visible but records-gated and
+    return no rows to anonymous callers.
+  sources:
+  - live probe 2026-07-27
+- name: apikey
+  type: apiKey
+  in: query
+  parameter: apikey
+  description: API key to make authenticated requests.
+  sources:
+  - openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
+  - openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+- name: apikey-header
+  type: http
+  scheme: Apikey
+  in: header
+  parameter: Authorization
+  format: "Authorization: Apikey <API_KEY>"
+  description: >-
+    The platform's recommended way to pass the API key, documented but absent from the OpenAPI.
+    Preferred over the query parameter because headers are not retained in browser history or
+    server logs.
+  recommended: true
+  sources:
+  - https://help.huwise.com/apis/ods-explore-v2/#section/Authentication/Providing-API-keys-within-requests
+- name: oauth2
+  type: oauth2
+  description: >-
+    OAuth 2.0 authorization-code flow for third-party applications acting on behalf of a portal user.
+    RFC 6749 compliant, bearer tokens per RFC 6750. Applications are registered per domain from the
+    account "My applications" tab; authorization codes expire after 1 hour and are exchanged for a
+    bearer token plus a refresh token.
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://northernpowergrid.opendatasoft.com/oauth2/authorize/
+    tokenUrl: https://northernpowergrid.opendatasoft.com/oauth2/token/
+    refresh: true
+    client_types: [confidential, public]
+    scopes: [all]
+  sources:
+  - https://help.huwise.com/apis/ods-explore-v2/#section/Authentication/Using-OAuth2-authorization
+  - live probe 2026-07-27
+credential_acquisition:
+  signup: https://northernpowergrid.opendatasoft.com/signup/
+  login: https://northernpowergrid.opendatasoft.com/account/login/
+  cost: free
+  effect: >-
+    A free portal account raises the daily API allowance above the anonymous 5,000 and unlocks the
+    records of the datasets that are hidden from anonymous callers.
+related:
+  scopes: scopes/northern-powergrid-scopes.yml
+  conventions: conventions/northern-powergrid-conventions.yml
+  rate_limits: rate-limits/northern-powergrid-rate-limits.yml

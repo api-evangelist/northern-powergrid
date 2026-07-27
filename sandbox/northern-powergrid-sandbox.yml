@@ -1,0 +1,63 @@
+generated: '2026-07-27'
+method: searched
+source: https://help.huwise.com/apis/ods-explore-v2/
+note: >-
+  There is no test-vs-live key separation here, and there are no magic test values — this is a
+  read-only open data API, so the production surface IS the safe surface: every call is a query,
+  nothing can be mutated, and no credential is required to start. What the provider does publish is
+  an interactive request console against the real API, plus the platform's own public example portal
+  used throughout the reference documentation. Both were confirmed answering on 2026-07-27.
+test_vs_live:
+  separated: false
+  reason: >-
+    Read-only, GET-only API. There is no write path to sandbox, no test mode, and no test key prefix.
+    Experimentation happens against production data with no side effects.
+consoles:
+- name: Explore API v2.1 console
+  url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
+  status: 200
+  kind: interactive request builder
+  auth_required: false
+  detail: >-
+    Builds and executes real ODSQL queries against Northern Powergrid's live catalogue from the
+    browser, no account needed.
+- name: Explore API v2.0 console
+  url: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/console
+  kind: interactive request builder
+  auth_required: false
+- name: Search API v1 console
+  url: https://northernpowergrid.opendatasoft.com/api/v1/console
+  kind: interactive request builder
+  auth_required: false
+- name: API console (portal)
+  url: https://northernpowergrid.opendatasoft.com/api-console/explore/v2.1/
+  status: 200
+  kind: portal-embedded console
+example_portal:
+  name: Opendatasoft documentation resources portal
+  base_url: https://documentation-resources.huwise.com/api/explore/v2.1
+  status: 200
+  datasets: 19
+  auth_required: false
+  detail: >-
+    The public portal the platform's reference documentation runs every example against. Useful as a
+    stable, tiny fixture set for exercising ODSQL, pagination and export formats before pointing a
+    client at the 102-dataset Northern Powergrid catalogue.
+  source: https://help.huwise.com/apis/ods-explore-v2/#section/Getting-Started
+credentials:
+  anonymous:
+    required: false
+    quota: 5000 requests/day
+  registered:
+    required: false
+    signup: https://northernpowergrid.opendatasoft.com/signup/
+    cost: free
+    effect: extended daily quota plus access to the records of the datasets gated to anonymous callers
+test_values: []
+test_clocks: false
+fixture_tooling: null
+first_call:
+  description: A complete, credential-free first call against the live catalogue.
+  request: "GET https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets?limit=1"
+  verified: '2026-07-27'
+  verified_response_summary: '200; total_count 102'

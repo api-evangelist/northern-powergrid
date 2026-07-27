@@ -1,0 +1,115 @@
+generated: '2026-07-27'
+method: searched
+source: https://help.huwise.com/apis/ods-explore-v2/
+derived_from:
+- openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+- live probes of https://northernpowergrid.opendatasoft.com/api/explore/v2.1 on 2026-07-27
+summary: >-
+  Northern Powergrid's open data API is the Opendatasoft Explore API v2.1: read-only, GET-only,
+  JSON-only, and driven end to end by one query language (ODSQL) so that the same parameters mean the
+  same thing on every endpoint. There is no request body anywhere in the contract, so there is also
+  no create/update semantics, no idempotency key and no write conflict model — every operation is a
+  safe, repeatable read.
+authentication:
+  style: anonymous by default; optional API key or OAuth 2.0 bearer token
+  key_transport:
+  - header: "Authorization: Apikey <API_KEY>"
+    recommended: true
+  - query: apikey
+  detail: authentication/northern-powergrid-authentication.yml
+idempotency:
+  supported: true
+  mechanism: http-method
+  idempotency_key_header: null
+  detail: >-
+    Every operation in both published versions of this API is an HTTP GET. There are no write
+    operations, so there is nothing to deduplicate and the provider ships no Idempotency-Key
+    contract. Retries are unconditionally safe: repeating any call re-runs a query and cannot create,
+    mutate or double-charge anything. The only retry consideration is the daily request quota, since
+    each retry consumes an allowance unit.
+  retry_guidance: >-
+    Safe to retry any 5xx or 429 without deduplication. On 429, back off until the X-RateLimit-Reset
+    timestamp rather than retrying immediately — the window is daily, not per-second.
+pagination:
+  style: offset
+  parameters:
+    limit: {default: 10, max_without_group_by: 100, max_with_group_by: 20000}
+    offset: {default: 0, constraint: "offset + limit < 10000 without group_by; < 20000 with group_by"}
+  response_fields:
+  - total_count
+  - results
+  - links
+  navigation: >-
+    Responses carry a links array of hypermedia relations, and the Link HTTP header is used for
+    navigation and for pointing at the version changelog.
+  bulk_escape_hatch: >-
+    The paging caps apply to the records endpoints only. The exports endpoints
+    (exportRecords, exportRecordsCSV, exportRecordsParquet, exportRecordsGPX) have no result limit
+    and are the documented path for whole-dataset retrieval.
+query_language:
+  name: Opendatasoft Query Language (ODSQL)
+  docs: https://help.huwise.com/apis/ods-explore-v2/#section/Opendatasoft-Query-Language-(ODSQL)
+  clauses: [select, where, group_by, order_by, refine, exclude, limit, offset, lang, timezone]
+  detail: >-
+    ODSQL is the single lever across the whole API — the same select/where/group_by/order_by grammar
+    applies to catalog search, dataset records, facets and exports. Learning it once covers all
+    sixteen operations, which is why this API has an unusually shallow learning curve for its
+    breadth.
+field_selection:
+  supported: true
+  parameter: select
+  detail: >-
+    select projects fields and can compute labelled expressions (e.g. select=size * 2 as
+    bigger_size), so sparse responses and derived columns are both server-side.
+faceting:
+  supported: true
+  parameters: [facet, refine, exclude]
+  operations: [getDatasetsFacets, getRecordsFacets]
+content_negotiation:
+  request: GET only, no request bodies
+  response_default: application/json; charset=utf-8
+  export_formats: [json, csv, xlsx, parquet, geojson, gpx, shp, rdf/xml (DCAT-AP)]
+  language: content-language honoured; lang parameter available
+error_envelope:
+  format: custom json
+  rfc9457: false
+  media_type: application/json; charset=utf-8
+  shape:
+    error_code: machine-readable error identifier (PascalCase string)
+    message: human-readable explanation, often naming the offending clause and character position
+  examples:
+  - status: 400
+    body: {error_code: ODSQLSyntaxError, message: "ODSQL syntax exception: unexpected ( at position 9 ... Clause(s) containing the error(s): where."}
+  - status: 404
+    body: {error_code: NotFoundResource, message: "The requested dataset <id> does not exist."}
+  detail: errors/northern-powergrid-problem-types.yml
+rate_limit_signaling:
+  headers: [X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Reset]
+  over_limit_status: 429
+  detail: rate-limits/northern-powergrid-rate-limits.yml
+versioning:
+  scheme: uri-path
+  current: v2.1
+  also_served: v2.0
+  stability: >-
+    v2.1 is declared stable and production ready with no future breaking changes; breaking changes
+    are only ever introduced as a new version at a new path.
+  deprecation_header: ODS-Explore-API-Deprecation
+  detail: lifecycle/northern-powergrid-lifecycle.yml
+request_tracing:
+  request_id_header: null
+  note: No correlation/request-id header is emitted or documented.
+cors:
+  enabled: true
+  allow_origin: "*"
+  allow_methods: [GET, POST, OPTIONS]
+  exposed_headers: [ODS-Explore-API-Deprecation, Link, X-RateLimit-Remaining, X-RateLimit-Limit, X-RateLimit-Reset, X-RateLimit-dataset-Remaining, X-RateLimit-dataset-Limit, X-RateLimit-dataset-Reset]
+  detail: >-
+    Wildcard CORS with the rate-limit and deprecation headers explicitly exposed, so browser-side and
+    agent-side clients can read their own quota state — a genuinely useful touch for an open data API.
+transport_security:
+  https: enforced
+  hsts: true
+  hsts_max_age: 31536000
+  headers: [strict-transport-security, x-content-type-options, referrer-policy, content-security-policy, permissions-policy]
+  detail: security/northern-powergrid-domain-security.yml

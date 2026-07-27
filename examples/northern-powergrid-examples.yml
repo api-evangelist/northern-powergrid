@@ -1,0 +1,130 @@
+generated: '2026-07-27'
+method: searched
+source: live calls against https://northernpowergrid.opendatasoft.com/api/explore/v2.1 on 2026-07-27
+note: >-
+  The published OpenAPI declares response codes but attaches no schemas and no examples to any of
+  them, so there is nothing to harvest from the spec. These are real request/response pairs captured
+  live and unauthenticated against Northern Powergrid's production catalogue — abridged where a
+  response was long, never edited or invented. Every one is reproducible today with curl and no
+  credential.
+api: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+base_url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1
+auth: none required
+examples:
+- name: Count the catalogue
+  operationId: getDatasets
+  request:
+    method: GET
+    path: /catalog/datasets
+    query: {limit: 1, select: dataset_id}
+    curl: "curl 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets?limit=1&select=dataset_id'"
+  response:
+    status: 200
+    abridged: false
+    body:
+      total_count: 102
+      results:
+      - dataset_id: combined-authority-boundaries
+  note: total_count is the honest size of the open data programme — 102 datasets on this date.
+- name: Browse the catalogue by theme
+  operationId: getDatasetsFacets
+  request:
+    method: GET
+    path: /catalog/facets
+    query: {facet: theme, limit: 5}
+    curl: "curl 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/facets?facet=theme&limit=5'"
+  response:
+    status: 200
+    abridged: true
+    body:
+      links:
+      - {rel: self, href: 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/facets'}
+      - {rel: source, href: 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog'}
+      facets:
+      - name: theme
+        facets:
+        - {name: Network, count: 77, state: displayed, value: Network}
+        - {name: Net Zero Future, count: 21, state: displayed, value: Net Zero Future}
+        - {name: Connecting Generation, count: 19, state: displayed, value: Connecting Generation}
+  note: >-
+    The fastest orientation call on this API — it tells you what the 102 datasets are actually about
+    before you read a single one.
+- name: Read live power cuts
+  operationId: getRecords
+  request:
+    method: GET
+    path: /catalog/datasets/live-power-cuts-data/records
+    query: {limit: 1}
+    curl: "curl 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/live-power-cuts-data/records?limit=1'"
+  response:
+    status: 200
+    abridged: true
+    body:
+      total_count: 242
+      results:
+      - reference: INCD-798699-A
+        powercutcategory: U/G Service repair
+        natureofoutage: Localised Fault
+        type: LV
+        area: Yorkshire
+        postcode: ["DN6  9EL"]
+        loggedtime: '2026-07-27T19:39:00+00:00'
+        estimatedtimetillresolution: '2026-07-27T23:59:00+00:00'
+        totalconfirmedpowercut: 2
+        numberofcalls: 2
+        lat: 53.6307
+        lng: -1.17386
+  note: >-
+    242 open incidents at the moment of capture. Fields shown are a subset of the ~30 the record
+    carries; the response is live operational data, refreshed continuously, and is the single most
+    valuable thing this API serves.
+- name: Aggregate with ODSQL group_by
+  operationId: getRecords
+  request:
+    method: GET
+    path: /catalog/datasets/live-power-cuts-data/records
+    query: {select: powercutcategory, group_by: powercutcategory, limit: 10}
+    curl: "curl 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/live-power-cuts-data/records?select=powercutcategory&group_by=powercutcategory&limit=10'"
+  response:
+    status: 200
+    abridged: true
+    body:
+      total_count: 10
+      results:
+      - {powercutcategory: '10'}
+      - {powercutcategory: 'Damaged LV U/G'}
+      - {powercutcategory: 'HV Restoration'}
+  note: Server-side aggregation, no client-side rollup needed — the group_by cap is 20,000 rows.
+- name: Malformed ODSQL
+  operationId: getDatasets
+  request:
+    method: GET
+    path: /catalog/datasets
+    query: {where: 'BADSYNTAX(('}
+    curl: "curl 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets?where=BADSYNTAX(('"
+  response:
+    status: 400
+    abridged: false
+    body:
+      error_code: ODSQLSyntaxError
+      message: "ODSQL syntax exception: unexpected ( at position 9 in BADSYNTAX((. Clause(s) containing the error(s): where."
+  note: The error names the clause and the character offset — cheap to debug, easy for an agent to correct.
+- name: Unknown dataset
+  operationId: getDataset
+  request:
+    method: GET
+    path: /catalog/datasets/nonexistent-dataset-xyz
+    curl: "curl 'https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/nonexistent-dataset-xyz'"
+  response:
+    status: 404
+    abridged: false
+    body:
+      error_code: NotFoundResource
+      message: "The requested dataset nonexistent-dataset-xyz does not exist."
+  note: 404 is returned in practice but is declared on no operation in the OpenAPI.
+observed_response_headers:
+  x-ratelimit-limit: '5000'
+  x-ratelimit-remaining: '4975'
+  x-ratelimit-reset: '2026-07-28 00:00:00+00:00'
+  strict-transport-security: max-age=31536000;includeSubdomains
+  access-control-allow-origin: '*'
