@@ -1,0 +1,476 @@
+aid: northern-powergrid
+name: Northern Powergrid
+review:
+  question: >-
+    Britain mandated smart-meter infrastructure but never a consumer energy data right. So what does a
+    British DNO actually publish — and is the open data programme a real implementation or a compliance
+    claim?
+  answer: >-
+    Real implementation, on the market-data side only. Northern Powergrid runs a live Opendatasoft open
+    data portal at northernpowergrid.opendatasoft.com carrying 102 datasets under its own Northern
+    Powergrid Open Data Licence v1.0, with a fully described OpenAPI 3.0.3 REST API that answered
+    anonymously on 2026-07-27 and returned 229 live power-cut incidents in real time. That programme is
+    not voluntary goodwill — it discharges Ofgem's Data Best Practice Guidance, which is a licence
+    condition under the RIIO-ED2 price control. It is also the rare mandate in this sector that is
+    visibly implemented rather than merely claimed, because the endpoint answers. On the consumer side
+    there is nothing and there is not supposed to be: the UK has no energy analogue to the Australian
+    Consumer Data Right, and a DNO holds no retail account or billing relationship anyway. The one
+    consumer-adjacent dataset, Aggregated Smart Metering Data, is deliberately de-identified — half-hourly
+    real and reactive power by LV feeder or distribution substation, suppressed where fewer than five
+    smart meters responded in the half hour. The split is the finding: wide open on network and market
+    data, structurally zero on consumer data.
+  date: '2026-07-27'
+  reviewer: API Evangelist
+  tier: network-distributor
+  homeMarket: United Kingdom
+
+mandate:
+  regime: other
+  status: live-implemented
+  regimeName: Ofgem Data Best Practice Guidance, enforced as a licence condition under RIIO-ED2
+  verbatimFinding: >-
+    The obligation that actually produces Northern Powergrid's API is Ofgem's Data Best Practice
+    Guidance, which is binding on companies whose licences are subject to the RIIO-ED2 price control
+    (2023-2028) — Northern Powergrid (Northeast) plc and Northern Powergrid (Yorkshire) plc among them.
+    Data Best Practice requires network licensees to treat data as presumed open, to publish it in an
+    interoperable and discoverable form, and to use a data triage process before withholding it. It is
+    an obligation to publish, not a consumer data right: it says nothing about a household's ability to
+    port its own consumption to a third party. This is deliberately recorded as `other` rather than
+    `smart-meter-infrastructure` because the DCC mandate is not what built this API — see
+    ukSmartMeterInfrastructureForTheRecord below.
+  howTheImplementationWasVerified: >-
+    Not from a compliance page. Verified by anonymous HTTP on 2026-07-27:
+    (1) GET https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json returned HTTP 200,
+    45,944 bytes, parsed as OpenAPI 3.0.3, title "Explore API" v2.1, 16 paths, single declared server
+    https://northernpowergrid.opendatasoft.com/api/explore/v2.1;
+    (2) GET /api/explore/v2.1/catalog/datasets?limit=1 returned HTTP 200 with total_count 102;
+    (3) GET /api/explore/v2.1/catalog/datasets/live-power-cuts-data/records?limit=1 returned HTTP 200
+    with total_count 229 and a live incident record (INCD-798455-A, HV Restoration, logged
+    2026-07-27T10:43:00+00:00) — that is a running production system, not a static publication;
+    (4) the licence facet on the catalog returned 99 datasets under "Northern Powergrid Open Data Licence
+    v1.0", 2 under "Northern Powergrid Shared Data Licence - Underground Assets" and 1 under CC BY 4.0.
+    The evidence of triage is also in the data — the portal publishes a `data-triage-assessments`
+    dataset, which is exactly the Data Best Practice artefact.
+  whatWasNotVerified: >-
+    The text of the Data Best Practice Guidance itself was established from web search
+    (ofgem.gov.uk consultation PDF, RIIO-2 RIGs guidance) and not fetched in this session, and
+    Northern Powergrid's own open-data policy pages on www.northernpowergrid.com could not be read at
+    all — that host returns HTTP 403 to every non-browser client including WebFetch, so no statement on
+    the corporate site is quoted anywhere in this profile.
+  ukConsumerDataRightForTheRecord:
+    exists: false
+    finding: >-
+      Great Britain has no statutory consumer energy data portability right. There is no CDR-equivalent
+      designation, no accredited-recipient register, no Consumer Data Standards for energy, and no
+      Green Button obligation. A GB household's half-hourly consumption sits with its supplier and with
+      the Smart DCC, and third-party access runs through commercial or DCC-user routes, not through a
+      public consented API standard. Northern Powergrid is therefore not a designated data holder under
+      anything, and this is recorded as an absence of obligation, not as non-compliance.
+  ukSmartMeterInfrastructureForTheRecord:
+    mandateExists: true
+    finding: >-
+      Britain's actual energy data mandate is infrastructural: the Smart DCC (Data Communications
+      Company) is a licensed monopoly carrying smart-meter traffic, and network operators including
+      Northern Powergrid are DCC network-party users. That mandate is real, but it is a machine-to-machine
+      settlement and network-operations rail, not a consumer data right and not a public API. The only
+      place it surfaces publicly in this profile is the `aggregated-smart-metering-data` dataset, which
+      is DCC-derived smart meter consumption aggregated to LV feeder and distribution substation level
+      with a five-device suppression threshold.
+    whyNotTheRecordedRegime: >-
+      Tagging this organization `smart-meter-infrastructure` would credit the DCC with an API it did not
+      cause. Every endpoint recorded here exists because of Data Best Practice under RIIO-ED2. Both facts
+      are recorded so a reader can re-map the enum without losing either.
+  claimVsImplementation: >-
+    Nothing in this file rests on a claim. Every URL below carries the HTTP status observed on
+    2026-07-27. Where the organization's own words would have been useful — its open data policy page,
+    its Data Best Practice statement — those pages were unreachable behind a 403 WAF and are therefore
+    simply absent rather than paraphrased.
+
+dataStandard:
+  primary: no consumer data standard reference found
+  finding: >-
+    No Green Button, no NAESB REQ.21 ESPI, no CDR Consumer Data Standards, no IEEE 2030.5, no OpenADR,
+    no OCPP and no OCPI reference was found on any Northern Powergrid property probed. That is the
+    expected answer for a GB DNO, none of which is a consumer-facing entity.
+  standardsActuallyPresent:
+  - name: IEC CIM (Common Information Model)
+    evidence: >-
+      Dataset `ltds-cim-files`, titled "LTDS Stage 2 CIM Files" — CIM network model files published as
+      part of the Long Term Development Statement Stage 2 requirement. Metadata is readable anonymously
+      (HTTP 200) but data_visible is false and the records endpoint returns HTTP 403 to an anonymous
+      caller. This is the only recognised international power-systems data model found in the estate.
+    version: not stated in the dataset metadata; no IEC part number published
+  - name: OpenAPI 3.0.3
+    evidence: >-
+      Two independently published descriptions — /api/explore/v2.1/swagger.json and
+      /api/explore/v2.0/swagger.json (byte-identical to the /api/v2/swagger.json alias). Both parsed.
+  - name: DCAT / DCAT-AP
+    evidence: >-
+      /api/explore/v2.1/catalog/exports/dcat returned HTTP 200, and the parameterised
+      /catalog/exports/dcat?dcat_ap_format=eu returned HTTP 200 — a standards-conformant catalogue
+      export of the whole portal.
+  - name: Opendatasoft Query Language (ODSQL)
+    evidence: >-
+      Declared throughout the OpenAPI description as the query grammar for every endpoint. A vendor
+      language, not an open standard, and the real learning curve for a consumer of this API.
+  - name: Northern Powergrid Open Data Licence v1.0
+    evidence: >-
+      The licence facet on the catalog reports 99 of 102 datasets under it. A bespoke instrument, not
+      the Open Government Licence and not Creative Commons; published at
+      https://northernpowergrid.opendatasoft.com/p/opendatalicence/ (HTTP 200).
+  notFound:
+  - Green Button / ESPI (NAESB REQ.21) — no reference on any probed property.
+  - CDR Consumer Data Standards (energy) — not a UK instrument.
+  - IEEE 2030.5, OpenADR, OCPP, OCPI — no reference found.
+  - AsyncAPI, GraphQL — no description or endpoint found.
+
+consumerVsMarketData:
+  consumerDataApi: false
+  consumerDataNote: >-
+    There is no route by which a third party can obtain an individual customer's energy usage or billing
+    data from Northern Powergrid, and structurally there could not be. A GB distribution network operator
+    does not bill households — the retail supplier does. Northern Powergrid holds no retail account, no
+    tariff, no invoice and no consented-access surface. Every customer-facing digital service on
+    www.northernpowergrid.com (report a power cut, apply for a connection, priority services register)
+    is an HTML form behind a 403-guarded WAF, and none documents an API. No OAuth, no OpenID Connect
+    discovery document and no consent flow exists anywhere in the estate.
+  theClosestThingToConsumerData:
+    dataset: aggregated-smart-metering-data
+    title: Aggregated Smart Metering Data
+    finding: >-
+      Half-hourly real and reactive power recorded by smart meters, aggregated to LV feeder or
+      distribution substation level and refreshed monthly. Explicitly de-identified: "where less than
+      five smart meter devices have responded within a half-hour period the aggregated consumption value
+      has not been published." Licensed under Northern Powergrid Open Data Licence v1.0. Metadata reads
+      anonymously (HTTP 200); the records endpoint returns HTTP 403 anonymously and needs a free portal
+      account. This is smart-meter data published as network data, which is the honest description — it
+      is not consumer data portability by any definition.
+  marketDataOpen: true
+  marketDataNote: >-
+    Yes, and substantively. 102 datasets confirmed via the catalog endpoint, spanning four portal themes
+    (Network 77, Net Zero Future 21, Connecting Generation 19, Connecting Demand 17). The estate includes
+    live operational surfaces — live-power-cuts-data (229 open incidents at fetch time),
+    npg-live-132kv-circuit, npg-live-66kv-circuit, npg-live-33kv-circuit, npg-live-bsp-operational,
+    live-primary-operational-metering-14-day, grid-supply-point-operational-metering — alongside the
+    planning and market estate: embedded-capacity-register and part 2, connection-queue-information,
+    the full Long Term Development Statement appendix series (LTDS appendices 1 and 3 through 11 plus
+    LTDS Stage 2 CIM files), Distribution Future Energy Scenarios at whole-area and local-authority
+    level, Network Development Plan thermal demand and generation headroom, distribution-network-options
+    -assessment-dnoa, northern-powergrid-load-indices, historical-peak-demand,
+    3_day_gsp_carbon_intensity and 30_day_gsp_carbon_intensity, generation-mix-latest-values,
+    small-scale-generation, technical-limits, flexibility procurement and dispatch under SLC31E
+    (slc31e-dispatch, slc31e-procurement, slc31e-procurement-locational,
+    npg-flexibility-dispatch-ehv-zone, curtailment-events-site-specific), plus geospatial assets —
+    substation service areas, postcode boundaries, EHV/HV/LV feeders and cables, all_dno_boundaries and
+    idno_regions. It even publishes its own portal telemetry (portal-downloads-by-month,
+    distinct-portal-users-per-month) and its own data-roadmap and data-triage-assessments, which is
+    Data Best Practice transparency showing its working.
+  splitFinding: >-
+    The split here is not open-versus-closed by intent, it is a structural consequence of unbundling. The
+    poles-and-wires business has enormous amounts of grid data and zero customer data; the supplier has
+    the customer data and no network. Britain mandated the poles-and-wires side to publish (Data Best
+    Practice) and never mandated the supplier side to share with the customer (no CDR). So the country
+    ends up with excellent open grid data and no consumer data right — the exact inverse of Australia,
+    which extended the CDR to energy and got a consumer obligation before it got DNO open data culture.
+    A developer building a UK home-energy product cannot get a household's meter reads from this API and
+    can get the substation that household hangs off, in detail, for free.
+  secondaryGate:
+    finding: >-
+      44 of the 102 datasets carry data_visible: false. Their metadata is fully readable anonymously but
+      the /records endpoint returns HTTP 403 without an account. Confirmed hidden: ngn-north,
+      npg-flexibility-dispatch-ehv-zone, npg-site-utilisation-forecasted, curtailment-events-site-specific,
+      ltds-documents, npg-hv-underground-cables, ltds-appendix-1-northeast, lv-underground-cables,
+      ltds-appendix-3 through ltds-appendix-11, ltds-zips, ltds-capacity-heatmap, ltds_ehv_sites,
+      ltds-cim-files, npg-daily-33kv/66kv/132kv-circuit, npg-live-132kv-circuit, npg-live-66kv-circuit,
+      npg-live-bsp-operational, live-primary-operational-metering-14-day, generation-mix-latest-values,
+      3_day_gsp_carbon_intensity, 30_day_gsp_carbon_intensity, odp_generation_mix_region_30day,
+      aggregated-smart-metering-data, smartmap, lv_oh_feeders, npg_hv_oh_feeders,
+      distribution-substation-service-areas, ehv-and-hv-supports-location, idno_regions,
+      small-scale-generation, operational-data-connectivity, npg-site-utilisation,
+      lv-monitor-deployment-strategy, project-progression-programme. 58 datasets, including
+      live-power-cuts-data, embedded-capacity-register and substation_sites_list, read fully anonymously.
+      This is the practical shape of the gate and it is worth stating precisely: the portal is open, but
+      the half of it a serious network analyst wants requires a free account.
+
+accessGate:
+  gate: self-serve
+  gated: false
+  whatADeveloperMustDo: >-
+    For 58 of 102 datasets: nothing at all. Call
+    https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets to enumerate, then
+    /catalog/datasets/{dataset_id}/records with ODSQL parameters, or /exports/csv, /exports/parquet or
+    /exports/gpx for bulk. No key, no signup, no terms click-through, CORS wide open
+    (access-control-allow-origin: *). Anonymous callers are metered at 5,000 requests per calendar day —
+    observed response headers x-ratelimit-limit: 5000, x-ratelimit-remaining: 4976,
+    x-ratelimit-reset: 2026-07-28 00:00:00+00:00. For the other 44 datasets, and for a higher allowance,
+    a free self-serve registration on the portal issues an API key which is passed as the `apikey` query
+    parameter. Use of the data is governed by the Northern Powergrid Open Data Licence v1.0, which is a
+    published licence rather than an agreement a developer must execute; two underground-asset datasets
+    sit under a separate Shared Data Licence. No accreditation, no application review, no partner
+    agreement and no commercial negotiation is involved anywhere.
+  developerPortalIsRealAndSelfServe: true
+  homonymTrap: >-
+    The portal page https://northernpowergrid.opendatasoft.com/pages/connections_developers/ (HTTP 200)
+    is titled "Connections Developers". On a DNO portal that means property and infrastructure
+    developers applying for a network connection — ICPs and IDNOs — not software developers. Do not
+    mistake it for a developer programme.
+
+authModel:
+  publicEndpoints:
+    scheme: none
+    note: >-
+      Anonymous HTTPS. No key, no bearer token, no OAuth, no mTLS required for the open half of the
+      catalog. Server header reports openresty.
+  optionalCredential:
+    scheme: apiKey
+    location: query
+    parameterName: apikey
+    declaredIn: >-
+      components.securitySchemes.apikey in both harvested OpenAPI documents, with a global
+      security requirement of [{"apikey": []}]. Description verbatim: "API key to make authenticated
+      requests."
+    issuance: Free self-serve account registration on the portal.
+    verifiedBehaviour: >-
+      A deliberately bogus key returned HTTP 401 on
+      /api/explore/v2.1/catalog/datasets/aggregated-smart-metering-data/records?limit=1&apikey=bogus,
+      confirming the key is genuinely validated rather than decorative.
+  oidcDiscovery:
+    probed: https://northernpowergrid.opendatasoft.com/.well-known/openid-configuration
+    result: HTTP 404. No OpenID Connect discovery document is served. /.well-known/ itself also 404.
+  oauth2: not found anywhere in the estate
+  mtls: not found; not applicable to any surface probed
+  cdrAccreditation: not applicable — no UK energy accreditation regime exists
+
+developerPortal:
+  url: https://northernpowergrid.opendatasoft.com/
+  confirmed: true
+  finding: >-
+    A real, live, self-serve open data portal on the Opendatasoft platform (branded Huwise in the
+    vendor's own help links), HTTP 200, with a working interactive API console at
+    /api/explore/v2.1/console and /api-console/explore/v2.1/, an Explore browser at /explore/, a map at
+    /map/, dashboards at /pages/portal_dashboards/, a tutorial page at /pages/tutorial_page/ and the
+    licence at /p/opendatalicence/ — all HTTP 200. It is not a customer login; anonymous data flows out
+    of it before any account exists.
+  corporateSiteUnreadable: >-
+    www.northernpowergrid.com and northernpowergrid.com return HTTP 403 to every client tried, including
+    a browser User-Agent and WebFetch, across /, /developers, /api, /data, /open-data,
+    /data-and-information, /power-cuts and /.well-known/security.txt. power.northernpowergrid.com is
+    also 403. Nothing from the corporate site is quoted or claimed in this profile.
+  subdomainsThatDoNotExist: >-
+    developer., developers., api., docs., data., opendata., powercuts., ora., flexibility. and
+    connections. on northernpowergrid.com all failed to resolve or connect (curl returned no HTTP
+    status).
+
+harvestedArtifacts:
+  openapiHarvested: true
+  specsCount: 2
+  specs:
+  - path: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
+    sourceUrl: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json
+    httpStatus: 200
+    fetchDate: '2026-07-27'
+    bytes: 45944
+    parsed: 'json — OpenAPI 3.0.3, title "Explore API", version v2.1, 16 paths, 2 tags (Catalog, Dataset)'
+    verbatim: true
+    note: >-
+      Saved exactly as served, unmodified. Declares a single server
+      https://northernpowergrid.opendatasoft.com/api/explore/v2.1 and a global apikey security
+      requirement. All operations are GET.
+  - path: openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
+    sourceUrl: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/swagger.json
+    httpStatus: 200
+    fetchDate: '2026-07-27'
+    bytes: 45828
+    parsed: 'json — OpenAPI 3.0.3, title "Explore API", version v2.0, 16 paths'
+    verbatim: true
+    note: >-
+      Byte-identical (md5 cd3cae7bd409b7ca0eab1c347736a42e) to the document served at the legacy alias
+      https://northernpowergrid.opendatasoft.com/api/v2/swagger.json, which was fetched separately and
+      compared. Only one copy is stored.
+  notHarvested:
+  - what: OpenAPI for the v1 Search API (/api/datasets/1.0)
+    reason: >-
+      The platform publishes no description for that generation. The API is real and answered
+      (nhits 102) and its console is live at /api/v1/console, but writing a specification for it would
+      be fabrication, so none was written.
+  - what: DCAT catalogue export
+    reason: >-
+      /api/explore/v2.1/catalog/exports/dcat is HTTP 200 and is linked as a property, but it is a data
+      catalogue, not an API contract, so it is not stored under openapi/.
+
+probeLog:
+- url: https://northernpowergrid.opendatasoft.com/
+  httpStatus: 200
+  note: Live Opendatasoft open data portal.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json
+  httpStatus: 200
+  note: OpenAPI 3.0.3, 45,944 bytes, parsed. HARVESTED.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/swagger.json
+  httpStatus: 200
+  note: OpenAPI 3.0.3, 45,828 bytes, parsed. HARVESTED.
+- url: https://northernpowergrid.opendatasoft.com/api/v2/swagger.json
+  httpStatus: 200
+  note: Byte-identical to the v2.0 document. Alias, not a distinct artifact.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/openapi.json
+  httpStatus: 404
+- url: https://northernpowergrid.opendatasoft.com/api/v2/openapi.json
+  httpStatus: 404
+- url: https://northernpowergrid.opendatasoft.com/openapi.json
+  httpStatus: 404
+  note: Same for /swagger.json and /api-docs at the domain root.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/console
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api-console/explore/v2.1/
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api/v1/console
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api/v2/console
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets?limit=1
+  httpStatus: 200
+  note: total_count 102.
+- url: https://northernpowergrid.opendatasoft.com/api/datasets/1.0/search/?rows=1
+  httpStatus: 200
+  note: 'Legacy v1 Search API answered: nhits 102.'
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/facets?facet=theme&facet=keyword&facet=license
+  httpStatus: 200
+  note: >-
+    Themes — Network 77, Net Zero Future 21, Connecting Generation 19, Connecting Demand 17.
+    Licences — Northern Powergrid Open Data Licence v1.0 (99), Northern Powergrid Shared Data Licence -
+    Underground Assets (2), CC BY 4.0 (1).
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/live-power-cuts-data/records?limit=1
+  httpStatus: 200
+  note: >-
+    total_count 229 live incidents. Sample record INCD-798455-A, HV Restoration, logged
+    2026-07-27T10:43:00+00:00, ETR 2026-07-27T12:14:00+00:00. Anonymous.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/aggregated-smart-metering-data
+  httpStatus: 200
+  note: Metadata readable anonymously. data_visible false.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/aggregated-smart-metering-data/records?limit=1
+  httpStatus: 403
+  note: Records gated. Free portal account required.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/aggregated-smart-metering-data/records?limit=1&apikey=bogus
+  httpStatus: 401
+  note: Deliberately invalid key rejected — the apikey scheme is genuinely enforced.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/ltds-cim-files
+  httpStatus: 200
+  note: '"LTDS Stage 2 CIM Files", data_visible false, licence Northern Powergrid Open Data Licence v1.0.'
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets/ltds-cim-files/records?limit=1
+  httpStatus: 403
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat?dcat_ap_format=eu
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/exports/csv
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/.well-known/openid-configuration
+  httpStatus: 404
+- url: https://northernpowergrid.opendatasoft.com/.well-known/
+  httpStatus: 404
+- url: https://northernpowergrid.opendatasoft.com/.well-known/security.txt
+  httpStatus: 200
+  note: >-
+    Opendatasoft's own file (Contact mailto:security@opendatasoft.com), not Northern Powergrid's.
+    Deliberately NOT recorded as a Northern Powergrid property.
+- url: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+  httpStatus: 200
+  note: >-
+    Licence page. Renders client-side; the licence body could not be extracted by WebFetch, so no terms
+    are quoted. The licence NAME is taken from catalog metadata, which is authoritative.
+- url: https://northernpowergrid.opendatasoft.com/explore/
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/map/
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/pages/home/
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/pages/tutorial_page/
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/pages/portal_dashboards/
+  httpStatus: 200
+- url: https://northernpowergrid.opendatasoft.com/pages/connections_developers/
+  httpStatus: 200
+  note: Homonym trap — network connection applicants (ICP/IDNO), not software developers.
+- url: https://northernpowergrid.opendatasoft.com/robots.txt
+  httpStatus: 200
+- url: https://www.northernpowergrid.com/
+  httpStatus: 403
+  note: WAF. Same 403 with a browser User-Agent and via WebFetch.
+- url: https://northernpowergrid.com/
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/open-data
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/data-and-information
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/developers
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/api
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/data
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/power-cuts
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/power-cuts/live-map
+  httpStatus: 403
+- url: https://www.northernpowergrid.com/.well-known/security.txt
+  httpStatus: 403
+- url: https://power.northernpowergrid.com/
+  httpStatus: 403
+- url: https://developer.northernpowergrid.com/
+  httpStatus: 'no response (curl exit, no status)'
+  note: 'Same for developers., api., docs., data., opendata., powercuts., ora., flexibility., connections.'
+- url: https://api.github.com/users/northernpowergrid
+  httpStatus: 200
+  note: >-
+    Real GitHub organization, 1 public repository — northernpowergrid/dfes, "Northern Powergrid's
+    potential future scenarios as defined in the National Grid Future Energy Scenarios (DFES)", created
+    2019-10-03. Not an API definition repository.
+- url: https://www.brkenergy.com/our-businesses/northern-powergrid
+  httpStatus: 200
+  note: >-
+    Parent company page. Source for "4 million homes and businesses" and "approximately 10,000 square
+    miles" in the description.
+- url: https://www.linkedin.com/company/northern-powergrid/
+  httpStatus: 200
+
+sources:
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json
+  type: OpenAPI
+  note: Primary machine contract. Harvested verbatim.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/datasets
+  type: APIReference
+  note: Primary evidence for the open-data finding — 102 datasets, anonymous, 5,000/day.
+- url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
+  type: APIReference
+  note: Live interactive console — the confirmed self-serve developer surface.
+- url: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+  type: License
+  note: Northern Powergrid Open Data Licence v1.0.
+- url: https://help.huwise.com/apis/ods-explore-v2/
+  type: ExternalDocumentation
+  note: Platform documentation for the Explore API and ODSQL, referenced from the OpenAPI description.
+- url: https://www.ofgem.gov.uk/guidance/riio-2-regulatory-instructions-and-guidance-and-regulatory-reporting-packs
+  type: Regulation
+  note: >-
+    RIIO-2 regulatory instructions and guidance. Basis for the Data Best Practice licence-condition
+    finding. Established via web search; not fetched in this session.
+- url: https://www.brkenergy.com/our-businesses/northern-powergrid
+  type: ParentCompany
+  note: Berkshire Hathaway Energy ownership and service-territory figures.
+
+actions:
+  apisYmlCreated: true
+  readmeCreated: true
+  openapiHarvested: true
+  specsCount: 2
+  apisListed: 3
+  fabricated: none
+  omissions: >-
+    No statement from www.northernpowergrid.com is used anywhere, because that host is 403 to every
+    client tried. The Smart DCC, Elexon and NESO are Britain's other energy data institutions and are
+    referenced only as context — they are separate organizations with their own profiles and none of
+    their endpoints was attributed to Northern Powergrid. The two datasets under the Shared Data Licence
+    - Underground Assets were counted from the licence facet but not individually identified, because a
+    facet-filtered query on that licence string returned no results and guessing which they are would be
+    invention.
