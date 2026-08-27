@@ -50,33 +50,35 @@ created: '2026-07-27'
 modified: '2026-07-27'
 specificationVersion: '0.23'
 apis:
-- aid: northern-powergrid:northern-powergrid-open-data-explore-api
-  name: Northern Powergrid Open Data Explore API
+- aid: northern-powergrid:northern-powergrid-open-data-search-api-v1
+  name: Northern Powergrid Open Data Search API v1
   description: >-
-    The current Opendatasoft Explore REST API (v2.1) over Northern Powergrid's open data portal. Read
-    only, GET only, JSON only, driven by the Opendatasoft Query Language (ODSQL). Sixteen documented
-    paths cover catalog search, dataset metadata, facets, record retrieval, attachments, DCAT-AP
-    catalogue export and per-dataset exports to CSV, Parquet and GPX. Confirmed answering anonymously
-    on 2026-07-27 — the catalog reports 102 datasets and the live power cuts dataset returned 229 open
-    incidents in real time. Anonymous callers get 5,000 requests per day (observed
-    x-ratelimit-limit: 5000, resetting daily); an optional apikey query parameter from a free portal
-    account raises the allowance and unlocks the datasets whose records are hidden from anonymous
-    callers.
-  humanURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
-  baseURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1
+    The original Opendatasoft Search API, still live on the portal and still carrying its own interactive
+    console. Confirmed anonymously on 2026-07-27 — GET /api/datasets/1.0/search/?rows=1 returned nhits
+    102, matching the v2.1 catalog count. No OpenAPI description is published by the platform for this
+    generation of the API, so none was saved and none was written.
+  humanURL: https://northernpowergrid.opendatasoft.com/api/v1/console
+  baseURL: https://northernpowergrid.opendatasoft.com/api/datasets/1.0
   tags:
   - Open Data
   - Energy
-  - Electricity
-  - Grid
-  - Network Capacity
-  - Outages
-  - Geospatial
+  - Search
+  - Legacy
+  properties:
+  - type: APIReference
+    url: https://northernpowergrid.opendatasoft.com/api/v1/console
+  - type: Portal
+    url: https://northernpowergrid.opendatasoft.com/
+- aid: northern-powergrid:northern-powergrid-catalog-api
+  name: Northern Powergrid Catalog API
+  description: API to enumerate datasets
+  humanURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
+  baseURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1
+  tags:
+  - Catalog
   properties:
   - type: OpenAPI
-    url: openapi/northern-powergrid-open-data-explore-api-v2-1-openapi.json
-  - type: Overlay
-    url: overlays/northern-powergrid-open-data-explore-api-v2-1-overlay.yaml
+    url: openapi/northern-powergrid-catalog-api-openapi.yml
   - type: APIReference
     url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
   - type: APIConsole
@@ -93,52 +95,41 @@ apis:
     url: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
   - type: Catalog
     url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
-- aid: northern-powergrid:northern-powergrid-open-data-explore-api-v2-0
-  name: Northern Powergrid Open Data Explore API v2.0
-  description: >-
-    The previous major version of the Opendatasoft Explore REST API, still served and still publishing
-    its own OpenAPI 3.0.3 description at /api/explore/v2.0/swagger.json. Byte-identical to the document
-    served at the legacy /api/v2/swagger.json alias. Same sixteen paths and same read-only, GET-only,
-    ODSQL-driven shape as v2.1; recorded separately because both descriptions are independently
-    published and versioned by the platform.
-  humanURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/console
-  baseURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.0
-  tags:
-  - Open Data
-  - Energy
-  - Electricity
-  - Legacy
-  properties:
-  - type: OpenAPI
-    url: openapi/northern-powergrid-open-data-explore-api-v2-0-openapi.json
-  - type: Overlay
-    url: overlays/northern-powergrid-open-data-explore-api-v2-0-overlay.yaml
   - type: APIReference
     url: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/console
+- aid: northern-powergrid:northern-powergrid-dataset-api
+  name: Northern Powergrid Dataset API
+  description: API to work on records
+  humanURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
+  baseURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1
+  tags:
+  - Dataset
+  properties:
+  - type: OpenAPI
+    url: openapi/northern-powergrid-dataset-api-openapi.yml
+  - type: APIReference
+    url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
+  - type: APIConsole
+    url: https://northernpowergrid.opendatasoft.com/api-console/explore/v2.1/
   - type: Portal
     url: https://northernpowergrid.opendatasoft.com/
+  - type: Explore
+    url: https://northernpowergrid.opendatasoft.com/explore/
+  - type: Documentation
+    url: https://northernpowergrid.opendatasoft.com/pages/tutorial_page/
   - type: ExternalDocumentation
     url: https://help.huwise.com/apis/ods-explore-v2/
-- aid: northern-powergrid:northern-powergrid-open-data-search-api-v1
-  name: Northern Powergrid Open Data Search API v1
-  description: >-
-    The original Opendatasoft Search API, still live on the portal and still carrying its own interactive
-    console. Confirmed anonymously on 2026-07-27 — GET /api/datasets/1.0/search/?rows=1 returned
-    nhits 102, matching the v2.1 catalog count. No OpenAPI description is published by the platform for
-    this generation of the API, so none was saved and none was written.
-  humanURL: https://northernpowergrid.opendatasoft.com/api/v1/console
-  baseURL: https://northernpowergrid.opendatasoft.com/api/datasets/1.0
-  tags:
-  - Open Data
-  - Energy
-  - Search
-  - Legacy
-  properties:
+  - type: License
+    url: https://northernpowergrid.opendatasoft.com/p/opendatalicence/
+  - type: Catalog
+    url: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/catalog/exports/dcat
   - type: APIReference
-    url: https://northernpowergrid.opendatasoft.com/api/v1/console
-  - type: Portal
-    url: https://northernpowergrid.opendatasoft.com/
+    url: https://northernpowergrid.opendatasoft.com/api/explore/v2.0/console
 common:
+- type: Overlay
+  url: overlays/northern-powergrid-open-data-explore-api-v2-1-overlay.yaml
+- type: Overlay
+  url: overlays/northern-powergrid-open-data-explore-api-v2-0-overlay.yaml
 - type: AgenticAccess
   url: agentic-access/northern-powergrid-agentic-access.yml
 - type: DomainSecurity
