@@ -19,6 +19,17 @@ description: >-
   sector it is visibly implemented rather than merely claimed. Roughly 44 of the 102 datasets are
   metadata-visible but records-gated to anonymous callers and require a free self-serve portal
   registration to read.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 accessModel:
   pricing: free
   onboarding: self-serve
