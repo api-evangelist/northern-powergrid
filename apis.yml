@@ -181,9 +181,10 @@ common:
   url: packages/northern-powergrid-packages.yml
 - type: Components
   url: components/northern-powergrid-components.yml
-- type: MCPServer
+- type: X-MCPServerCandidate
   name: Candidate MCP tool set derived from the OpenAPI (no server published)
   url: mcp/northern-powergrid-mcp.yml
+  note: 'Renamed from MCPServer 2026-09-03 (roadmap#247): the manifest self-describes as status: candidate — a tool list derived from the published API contracts, not an existing server. The scorer already read the manifest and reported mcp_server correctly; the MCPServer type was crediting the artifact-type surfaces with a server that does not exist.'
 - type: ToolCrosswalk
   url: mcp/northern-powergrid-tool-crosswalk.yml
 - type: AgentSkill
