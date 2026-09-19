@@ -114,6 +114,8 @@ apis:
   humanURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1/console
   baseURL: https://northernpowergrid.opendatasoft.com/api/explore/v2.1
   tags:
+  - Datasets
+  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI
