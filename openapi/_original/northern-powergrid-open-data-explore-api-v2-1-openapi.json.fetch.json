@@ -1,0 +1,12 @@
+{
+ "url": "https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json",
+ "requested_url": "https://northernpowergrid.opendatasoft.com/api/explore/v2.1/swagger.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 45944,
+ "sha256": "42a2ec934d11f12964f7c5234082070cc520bb4ff5e67c9f69907a067b5e1843",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
